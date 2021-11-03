@@ -5,7 +5,7 @@
 package resources
 
 import (
-	"k8s.io/apimachinery/pkg/api/errors"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	extensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
@@ -14,15 +14,27 @@ const (
 	CustomResourceDefinitionKind = "CustomResourceDefinition"
 )
 
-// CustomResourceDefinitionIsReady performs the logic to determine if a custom resource definition is ready.
-func CustomResourceDefinitionIsReady(
-	resource *Resource,
-) (bool, error) {
-	var crd extensionsv1.CustomResourceDefinition
-	if err := GetObject(resource, &crd, false); err != nil {
-		if errors.IsNotFound(err) {
-			return false, nil
-		}
+type CRDResource struct {
+	parent *extensionsv1.CustomResourceDefinition
+}
+
+// NewCRDResource creates and returns a new CRDResource.
+func NewCRDResource() *CRDResource {
+	return &CRDResource{
+		parent: &extensionsv1.CustomResourceDefinition{},
+	}
+}
+
+// GetParent returns the parent attribute of the resource.
+func (crd *CRDResource) GetParent() client.Object {
+	return crd.parent
+}
+
+// IsReady performs the logic to determine if a ConfigMap is ready.
+func (crd *CRDResource) IsReady(resource *Resource) (bool, error) {
+	// if we have a name that is empty, we know we did not find the object
+	if crd.parent.Name == "" {
+		return false, nil
 	}
 
 	return true, nil

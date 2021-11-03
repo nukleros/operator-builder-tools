@@ -6,33 +6,43 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
 	DeploymentKind = "Deployment"
 )
 
-// DeploymentIsReady performs the logic to determine if a deployment is ready.
-func DeploymentIsReady(
-	resource *Resource,
-) (bool, error) {
-	var deployment appsv1.Deployment
-	if err := GetObject(resource, &deployment, true); err != nil {
-		return false, err
-	}
+type DeploymentResource struct {
+	parent *appsv1.Deployment
+}
 
+// NewDeploymentResource creates and returns a new DeploymentResource.
+func NewDeploymentResource() *DeploymentResource {
+	return &DeploymentResource{
+		parent: &appsv1.Deployment{},
+	}
+}
+
+// GetParent returns the parent attribute of the resource.
+func (deployment *DeploymentResource) GetParent() client.Object {
+	return deployment.parent
+}
+
+// IsReady performs the logic to determine if a deployment is ready.
+func (deployment *DeploymentResource) IsReady(resource *Resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if deployment.Name == "" {
+	if deployment.parent.Name == "" {
 		return false, nil
 	}
 
 	// rely on observed generation to give us a proper status
-	if deployment.Generation != deployment.Status.ObservedGeneration {
+	if deployment.parent.Generation != deployment.parent.Status.ObservedGeneration {
 		return false, nil
 	}
 
 	// check the status for a ready deployment
-	if deployment.Status.ReadyReplicas != deployment.Status.Replicas {
+	if deployment.parent.Status.ReadyReplicas != deployment.parent.Status.Replicas {
 		return false, nil
 	}
 

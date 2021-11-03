@@ -6,24 +6,34 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
 	DaemonSetKind = "DaemonSet"
 )
 
-// DaemonSetIsReady checks to see if a daemonset is ready.
-func DaemonSetIsReady(
-	resource *Resource,
-) (bool, error) {
-	var daemonSet appsv1.DaemonSet
-	if err := GetObject(resource, &daemonSet, true); err != nil {
-		return false, err
-	}
+type DaemonSetResource struct {
+	parent *appsv1.DaemonSet
+}
 
+// NewDaemonSetResource creates and returns a new DaemonSetResource.
+func NewDaemonSetResource() *DaemonSetResource {
+	return &DaemonSetResource{
+		parent: &appsv1.DaemonSet{},
+	}
+}
+
+// GetParent returns the parent attribute of the resource.
+func (daemonSet *DaemonSetResource) GetParent() client.Object {
+	return daemonSet.parent
+}
+
+// DaemonSetIsReady checks to see if a daemonset is ready.
+func (daemonSet *DaemonSetResource) IsReady(resource *Resource) (bool, error) {
 	// ensure the desired number is scheduled and ready
-	if daemonSet.Status.DesiredNumberScheduled == daemonSet.Status.NumberReady {
-		if daemonSet.Status.NumberReady > 0 && daemonSet.Status.NumberUnavailable < 1 {
+	if daemonSet.parent.Status.DesiredNumberScheduled == daemonSet.parent.Status.NumberReady {
+		if daemonSet.parent.Status.NumberReady > 0 && daemonSet.parent.Status.NumberUnavailable < 1 {
 			return true, nil
 		}
 	}

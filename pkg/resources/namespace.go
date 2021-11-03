@@ -6,34 +6,44 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
 	NamespaceKind = "Namespace"
 )
 
-// NamespaceIsReady defines the criteria for a namespace to be condsidered
-// ready.
-func NamespaceIsReady(
-	resource *Resource,
-) (bool, error) {
-	var namespace v1.Namespace
-	if err := GetObject(resource, &namespace, true); err != nil {
-		return false, err
-	}
+type NamespaceResource struct {
+	parent *v1.Namespace
+}
 
+// NewNamespaceResource creates and returns a new NamespaceResource.
+func NewNamespaceResource() *NamespaceResource {
+	return &NamespaceResource{
+		parent: &v1.Namespace{},
+	}
+}
+
+// GetParent returns the parent attribute of the resource.
+func (namespace *NamespaceResource) GetParent() client.Object {
+	return namespace.parent
+}
+
+// IsReady defines the criteria for a namespace to be condsidered
+// ready.
+func (namespace *NamespaceResource) IsReady(resource *Resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if namespace.Name == "" {
+	if namespace.parent.Name == "" {
 		return false, nil
 	}
 
 	// if the namespace is terminating, it is not considered ready
-	if namespace.Status.Phase == v1.NamespaceTerminating {
+	if namespace.parent.Status.Phase == v1.NamespaceTerminating {
 		return false, nil
 	}
 
 	// finally, rely on the active field to determine if this namespace is ready
-	return namespace.Status.Phase == v1.NamespaceActive, nil
+	return namespace.parent.Status.Phase == v1.NamespaceActive, nil
 }
 
 // NamespaceForResourceIsReady checks to see if the namespace of a resource is
@@ -50,5 +60,12 @@ func NamespaceForResourceIsReady(resource *Resource) (bool, error) {
 	namespace.Version = "v1"
 	namespace.Kind = NamespaceKind
 
-	return NamespaceIsReady(namespace)
+	resource.setResourceChecker()
+
+	// get the object from the kubernetes cluster
+	if err := GetObject(resource, true); err != nil {
+		return false, err
+	}
+
+	return resource.resourceChecker.IsReady(resource)
 }

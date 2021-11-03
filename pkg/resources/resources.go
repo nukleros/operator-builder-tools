@@ -11,8 +11,6 @@ import (
 	"github.com/banzaicloud/operator-tools/pkg/reconciler"
 	"github.com/imdario/mergo"
 
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -47,32 +45,43 @@ func (resource *Resource) ToCommonResource() *Resource {
 	return commonResource
 }
 
+func (resource *Resource) setResourceChecker() {
+	switch resource.Kind {
+	case NamespaceKind:
+		resource.resourceChecker = NewNamespaceResource()
+	case CustomResourceDefinitionKind:
+		resource.resourceChecker = NewCRDResource()
+	case SecretKind:
+		resource.resourceChecker = NewSecretResource()
+	case ConfigMapKind:
+		resource.resourceChecker = NewConfigMapResource()
+	case DeploymentKind:
+		resource.resourceChecker = NewDeploymentResource()
+	case DaemonSetKind:
+		resource.resourceChecker = NewDaemonSetResource()
+	case StatefulSetKind:
+		resource.resourceChecker = NewStatefulSetResource()
+	case JobKind:
+		resource.resourceChecker = NewJobResource()
+	case ServiceKind:
+		resource.resourceChecker = NewServiceResource()
+	default:
+		resource.resourceChecker = NewUnknownResource()
+	}
+}
+
 // IsReady returns whether a specific known resource is ready.  Always returns true for unknown resources
 // so that dependency checks will not fail and reconciliation of resources can happen with errors rather
 // than stopping entirely.
 func (resource *Resource) IsReady() (bool, error) {
-	switch resource.Kind {
-	case NamespaceKind:
-		return NamespaceIsReady(resource)
-	case CustomResourceDefinitionKind:
-		return CustomResourceDefinitionIsReady(resource)
-	case SecretKind:
-		return SecretIsReady(resource)
-	case ConfigMapKind:
-		return ConfigMapIsReady(resource)
-	case DeploymentKind:
-		return DeploymentIsReady(resource)
-	case DaemonSetKind:
-		return DaemonSetIsReady(resource)
-	case StatefulSetKind:
-		return StatefulSetIsReady(resource)
-	case JobKind:
-		return JobIsReady(resource)
-	case ServiceKind:
-		return ServiceIsReady(resource)
+	resource.setResourceChecker()
+
+	// get the object from the kubernetes cluster
+	if err := GetObject(resource, true); err != nil {
+		return false, err
 	}
 
-	return true, nil
+	return resource.resourceChecker.IsReady(resource)
 }
 
 // AreReady returns whether resources are ready.  All resources must be ready in order
@@ -144,35 +153,6 @@ func AreEqual(desired, actual *Resource) (bool, error) {
 	return diffResults.IsEmpty(), nil
 }
 
-// NeedsUpdate determines if a resource needs to be updated.
-func NeedsUpdate(desired, actual *Resource) (bool, error) {
-	// check for equality first as this will let us avoid spamming user logs
-	// when resources that need to be skipped explicitly (e.g. CRDs) are seen
-	// as equal anyway
-	equal, err := AreEqual(desired, actual)
-	if equal || err != nil {
-		return !equal, err
-	}
-
-	// // always skip custom resource updates as they are sensitive to modification
-	// // e.g. resources provisioned by the resource definition would not
-	// // understand the update to a spec
-	// if desired.Kind == "CustomResourceDefinition" {
-	// 	message := fmt.Sprintf("skipping update of CustomResourceDefinition "+
-	// 		"[%s]", desired.Name)
-	// 	messageVerbose := fmt.Sprintf("if updates to CustomResourceDefinition "+
-	// 		"[%s] are desired, consider re-deploying the parent "+
-	// 		"resource or generating a new api version with the desired "+
-	// 		"changes", desired.Name)
-	// 	desired.Reconciler.GetLogger().V(4).Info(message)
-	// 	desired.Reconciler.GetLogger().V(7).Info(messageVerbose)
-
-	// 	return false, nil
-	// }
-
-	return true, nil
-}
-
 // EqualNamespaceName will compare the namespace and name of two resource objects for equality.
 func (resource *Resource) EqualNamespaceName(compared *Resource) bool {
 	return (resource.Name == compared.Name) && (resource.Namespace == compared.Namespace)
@@ -189,7 +169,6 @@ func (resource *Resource) EqualGVK(compared *Resource) bool {
 // object.
 func GetObject(
 	source *Resource,
-	destination client.Object,
 	allowMissing bool,
 ) error {
 	namespacedName := types.NamespacedName{
@@ -200,7 +179,7 @@ func GetObject(
 	if err := source.Client.Get(
 		source.Context,
 		namespacedName,
-		destination,
+		source.resourceChecker.GetParent(),
 	); err != nil {
 		if allowMissing {
 			if errors.IsNotFound(err) {

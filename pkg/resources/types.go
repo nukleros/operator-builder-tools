@@ -10,6 +10,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// resourceChecker is an interface which allows checking of a resource to see
+// if it is in a ready state.
+type resourceChecker interface {
+	IsReady(*Resource) (bool, error)
+	GetParent() client.Object
+}
+
 // ResourceCommon are the common fields used across multiple resource types.
 type ResourceCommon struct {
 	// Group defines the API Group of the resource.
@@ -31,9 +38,9 @@ type ResourceCommon struct {
 // Resource represents any kubernetes resource.
 type Resource struct {
 	ResourceCommon
+	resourceChecker resourceChecker
 
-	Object  client.Object
 	Client  client.Client
 	Context context.Context
-	// Reconciler common.ComponentReconciler
+	Object  client.Object
 }
