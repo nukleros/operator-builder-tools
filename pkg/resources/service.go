@@ -30,7 +30,7 @@ func (service *ServiceResource) GetParent() client.Object {
 }
 
 // IsReady checks to see if a job is ready.
-func (service *ServiceResource) IsReady(resource *Resource) (bool, error) {
+func (service *ServiceResource) IsReady(resource *resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if service.parent.Name == "" {
 		return false, nil

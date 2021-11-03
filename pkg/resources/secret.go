@@ -30,7 +30,7 @@ func (secret *SecretResource) GetParent() client.Object {
 }
 
 // IsReady checks to see if a secret is ready.
-func (secret *SecretResource) IsReady(resource *Resource) (bool, error) {
+func (secret *SecretResource) IsReady(resource *resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if secret.parent.Name == "" {
 		return false, nil

@@ -30,7 +30,7 @@ func (daemonSet *DaemonSetResource) GetParent() client.Object {
 }
 
 // DaemonSetIsReady checks to see if a daemonset is ready.
-func (daemonSet *DaemonSetResource) IsReady(resource *Resource) (bool, error) {
+func (daemonSet *DaemonSetResource) IsReady(resource *resource) (bool, error) {
 	// ensure the desired number is scheduled and ready
 	if daemonSet.parent.Status.DesiredNumberScheduled == daemonSet.parent.Status.NumberReady {
 		if daemonSet.parent.Status.NumberReady > 0 && daemonSet.parent.Status.NumberUnavailable < 1 {

@@ -10,13 +10,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// resourceChecker is an interface which allows checking of a resource to see
-// if it is in a ready state.
-type resourceChecker interface {
-	IsReady(*Resource) (bool, error)
-	GetParent() client.Object
-}
-
 // ResourceCommon are the common fields used across multiple resource types.
 type ResourceCommon struct {
 	// Group defines the API Group of the resource.
@@ -35,12 +28,38 @@ type ResourceCommon struct {
 	Namespace string `json:"namespace"`
 }
 
-// Resource represents any kubernetes resource.
-type Resource struct {
+// resource represents any kubernetes resource.
+type resource struct {
 	ResourceCommon
 	resourceChecker resourceChecker
 
 	Client  client.Client
 	Context context.Context
 	Object  client.Object
+}
+
+// resourceChecker is an interface which allows checking of a resource to see
+// if it is in a ready state.
+type resourceChecker interface {
+	IsReady(*resource) (bool, error)
+	GetParent() client.Object
+}
+
+// NewResource returns a new resource given a client object and a kubernetes api client
+// to use for interacting with cluster objects.
+func NewResource(object client.Object, apiClient client.Client, ctx context.Context) *resource {
+	newResource := &resource{
+		Object: object,
+	}
+
+	// set the inherited fields
+	newResource.Group = object.GetObjectKind().GroupVersionKind().Group
+	newResource.Version = object.GetObjectKind().GroupVersionKind().Version
+	newResource.Kind = object.GetObjectKind().GroupVersionKind().Kind
+	newResource.Name = object.GetName()
+	newResource.Namespace = object.GetNamespace()
+	newResource.Client = apiClient
+	newResource.Context = ctx
+
+	return newResource
 }

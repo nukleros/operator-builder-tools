@@ -31,7 +31,7 @@ func (crd *CRDResource) GetParent() client.Object {
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.
-func (crd *CRDResource) IsReady(resource *Resource) (bool, error) {
+func (crd *CRDResource) IsReady(resource *resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if crd.parent.Name == "" {
 		return false, nil

@@ -31,7 +31,7 @@ func (namespace *NamespaceResource) GetParent() client.Object {
 
 // IsReady defines the criteria for a namespace to be condsidered
 // ready.
-func (namespace *NamespaceResource) IsReady(resource *Resource) (bool, error) {
+func (namespace *NamespaceResource) IsReady(resource *resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if namespace.parent.Name == "" {
 		return false, nil
@@ -48,24 +48,24 @@ func (namespace *NamespaceResource) IsReady(resource *Resource) (bool, error) {
 
 // NamespaceForResourceIsReady checks to see if the namespace of a resource is
 // ready.
-func NamespaceForResourceIsReady(resource *Resource) (bool, error) {
+func NamespaceForResourceIsReady(rsrc *resource) (bool, error) {
 	// create a stub namespace resource to pass to the NamespaceIsReady method
-	namespace := &Resource{
-		Client: resource.Client,
+	namespace := &resource{
+		Client: rsrc.Client,
 	}
 
 	// insert the inherited fields
-	namespace.Name = resource.Namespace
+	namespace.Name = rsrc.Namespace
 	namespace.Group = ""
 	namespace.Version = "v1"
 	namespace.Kind = NamespaceKind
 
-	resource.setResourceChecker()
+	rsrc.setResourceChecker()
 
 	// get the object from the kubernetes cluster
-	if err := GetObject(resource, true); err != nil {
+	if err := GetObject(rsrc, true); err != nil {
 		return false, err
 	}
 
-	return resource.resourceChecker.IsReady(resource)
+	return rsrc.resourceChecker.IsReady(rsrc)
 }

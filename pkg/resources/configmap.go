@@ -30,7 +30,7 @@ func (configMap *ConfigMapResource) GetParent() client.Object {
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.
-func (configMap *ConfigMapResource) IsReady(resource *Resource) (bool, error) {
+func (configMap *ConfigMapResource) IsReady(resource *resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if configMap.parent.Name == "" {
 		return false, nil
