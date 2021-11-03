@@ -6,6 +6,7 @@ package resources
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/banzaicloud/k8s-objectmatcher/patch"
 	"github.com/banzaicloud/operator-tools/pkg/reconciler"
@@ -18,7 +19,8 @@ import (
 )
 
 const (
-	FieldManager = "reconciler"
+	waitTimeoutSeconds       = 600
+	waitCheckIntervalSeconds = 5
 )
 
 // ToUnstructured returns an unstructured representation of a Resource.
@@ -67,6 +69,27 @@ func (resource *Resource) setResourceChecker() {
 		resource.resourceChecker = NewServiceResource()
 	default:
 		resource.resourceChecker = NewUnknownResource()
+	}
+}
+
+// Wait waits for a resource to enter a ready state.
+func (resource *Resource) Wait() error {
+	timeout := time.After(waitTimeoutSeconds * time.Second)
+	interval := time.Tick(waitCheckIntervalSeconds * time.Second)
+	for {
+		select {
+		case <-timeout:
+			return fmt.Errorf("timed out waiting for resource")
+		case <-interval:
+			ready, err := resource.IsReady()
+			if err != nil {
+				return fmt.Errorf("error waiting for resource to be ready, %w", err)
+			}
+
+			if ready {
+				return nil
+			}
+		}
 	}
 }
 
