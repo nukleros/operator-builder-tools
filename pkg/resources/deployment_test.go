@@ -29,7 +29,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "deploymont should be ready",
+			name:    "deployment should be ready",
 			want:    true,
 			wantErr: false,
 			args: args{
@@ -59,7 +59,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			},
 		},
 		{
-			name:    "deploymont should not be ready (replicas)",
+			name:    "deployment should not be ready (replicas)",
 			want:    false,
 			wantErr: false,
 			args: args{
@@ -89,7 +89,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			},
 		},
 		{
-			name:    "deploymont should not be ready (name)",
+			name:    "deployment should not be ready (name)",
 			want:    false,
 			wantErr: false,
 			args: args{
@@ -118,7 +118,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			},
 		},
 		{
-			name:    "deploymont should not be ready (observed generation)",
+			name:    "deployment should not be ready (observed generation)",
 			want:    false,
 			wantErr: false,
 			args: args{
@@ -145,6 +145,15 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 						ObservedGeneration: int64(randomInt + 1),
 					},
 				},
+			},
+		},
+		{
+			name:    "deployment should not be ready (empty)",
+			want:    false,
+			wantErr: false,
+			args:    args{},
+			fields: fields{
+				parent: &appsv1.Deployment{},
 			},
 		},
 	}
