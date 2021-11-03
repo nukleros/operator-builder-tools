@@ -30,7 +30,7 @@ func (deployment *DeploymentResource) GetParent() client.Object {
 }
 
 // IsReady performs the logic to determine if a deployment is ready.
-func (deployment *DeploymentResource) IsReady(resource *resource) (bool, error) {
+func (deployment *DeploymentResource) IsReady(resource *Resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if deployment.parent.Name == "" {
 		return false, nil

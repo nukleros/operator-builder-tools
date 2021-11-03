@@ -21,6 +21,6 @@ func (unknown *UnknownResource) GetParent() client.Object {
 }
 
 // IsReady performs the logic to determine if a Unknown is ready.
-func (unknown *UnknownResource) IsReady(resource *resource) (bool, error) {
+func (unknown *UnknownResource) IsReady(resource *Resource) (bool, error) {
 	return true, nil
 }

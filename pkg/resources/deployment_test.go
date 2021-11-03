@@ -19,7 +19,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 		parent *appsv1.Deployment
 	}
 	type args struct {
-		resource *resource
+		resource *Resource
 	}
 	tests := []struct {
 		name    string
@@ -33,7 +33,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			want:    true,
 			wantErr: false,
 			args: args{
-				resource: &resource{
+				resource: &Resource{
 					ResourceCommon: ResourceCommon{
 						Name:      "ready",
 						Namespace: "ready",
@@ -63,7 +63,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			want:    false,
 			wantErr: false,
 			args: args{
-				resource: &resource{
+				resource: &Resource{
 					ResourceCommon: ResourceCommon{
 						Name:      "not-ready-replicas",
 						Namespace: "not-ready-replicas",
@@ -93,7 +93,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			want:    false,
 			wantErr: false,
 			args: args{
-				resource: &resource{
+				resource: &Resource{
 					ResourceCommon: ResourceCommon{
 						Name:      "not-ready-name",
 						Namespace: "not-ready-name",
@@ -122,7 +122,7 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			want:    false,
 			wantErr: false,
 			args: args{
-				resource: &resource{
+				resource: &Resource{
 					ResourceCommon: ResourceCommon{
 						Name:      "not-ready-generation",
 						Namespace: "not-ready-generation",

@@ -31,7 +31,7 @@ func (namespace *NamespaceResource) GetParent() client.Object {
 
 // IsReady defines the criteria for a namespace to be condsidered
 // ready.
-func (namespace *NamespaceResource) IsReady(resource *resource) (bool, error) {
+func (namespace *NamespaceResource) IsReady(resource *Resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if namespace.parent.Name == "" {
 		return false, nil
@@ -48,9 +48,9 @@ func (namespace *NamespaceResource) IsReady(resource *resource) (bool, error) {
 
 // NamespaceForResourceIsReady checks to see if the namespace of a resource is
 // ready.
-func NamespaceForResourceIsReady(rsrc *resource) (bool, error) {
+func NamespaceForResourceIsReady(rsrc *Resource) (bool, error) {
 	// create a stub namespace resource to pass to the NamespaceIsReady method
-	namespace := &resource{
+	namespace := &Resource{
 		Client: rsrc.Client,
 	}
 

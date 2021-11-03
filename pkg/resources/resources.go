@@ -24,7 +24,7 @@ const (
 )
 
 // ToUnstructured returns an unstructured representation of a Resource.
-func (resource *resource) ToUnstructured() (*unstructured.Unstructured, error) {
+func (resource *Resource) ToUnstructured() (*unstructured.Unstructured, error) {
 	innerObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&resource.Object)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (resource *resource) ToUnstructured() (*unstructured.Unstructured, error) {
 }
 
 // ToCommonResource converts a resources.Resource into a common API resource.
-func (resource *resource) ToCommonResource() *ResourceCommon {
+func (resource *Resource) ToCommonResource() *ResourceCommon {
 	commonResource := &ResourceCommon{}
 
 	// set the inherited fields
@@ -47,7 +47,7 @@ func (resource *resource) ToCommonResource() *ResourceCommon {
 	return commonResource
 }
 
-func (resource *resource) setResourceChecker() {
+func (resource *Resource) setResourceChecker() {
 	switch resource.Kind {
 	case NamespaceKind:
 		resource.resourceChecker = NewNamespaceResource()
@@ -73,7 +73,7 @@ func (resource *resource) setResourceChecker() {
 }
 
 // Wait waits for a resource to enter a ready state.
-func (resource *resource) Wait() error {
+func (resource *Resource) Wait() error {
 	timeout := time.After(waitTimeoutSeconds * time.Second)
 	interval := time.Tick(waitCheckIntervalSeconds * time.Second)
 	for {
@@ -96,7 +96,7 @@ func (resource *resource) Wait() error {
 // IsReady returns whether a specific known resource is ready.  Always returns true for unknown resources
 // so that dependency checks will not fail and reconciliation of resources can happen with errors rather
 // than stopping entirely.
-func (resource *resource) IsReady() (bool, error) {
+func (resource *Resource) IsReady() (bool, error) {
 	// get the object from the kubernetes cluster
 	if err := GetObject(resource, true); err != nil {
 		return false, err
@@ -107,7 +107,7 @@ func (resource *resource) IsReady() (bool, error) {
 
 // AreReady returns whether resources are ready.  All resources must be ready in order
 // to satisfy the requirement that resources are ready.
-func AreReady(resources ...*resource) (bool, error) {
+func AreReady(resources ...*Resource) (bool, error) {
 	for _, rsrc := range resources {
 		ready, err := rsrc.IsReady()
 		if !ready || err != nil {
@@ -119,7 +119,7 @@ func AreReady(resources ...*resource) (bool, error) {
 }
 
 // AreEqual determines if two resources are equal.
-func AreEqual(desired, actual *resource) (bool, error) {
+func AreEqual(desired, actual *Resource) (bool, error) {
 	mergedResource, err := actual.ToUnstructured()
 	if err != nil {
 		return false, err
@@ -175,12 +175,12 @@ func AreEqual(desired, actual *resource) (bool, error) {
 }
 
 // EqualNamespaceName will compare the namespace and name of two resource objects for equality.
-func (resource *resource) EqualNamespaceName(compared *resource) bool {
+func (resource *Resource) EqualNamespaceName(compared *Resource) bool {
 	return (resource.Name == compared.Name) && (resource.Namespace == compared.Namespace)
 }
 
 // EqualGVK will compare the GVK of two resource objects for equality.
-func (resource *resource) EqualGVK(compared *resource) bool {
+func (resource *Resource) EqualGVK(compared *Resource) bool {
 	return resource.Group == compared.Group &&
 		resource.Version == compared.Version &&
 		resource.Kind == compared.Kind
@@ -189,7 +189,7 @@ func (resource *resource) EqualGVK(compared *resource) bool {
 // GetObject returns an object based on an input object, and a destination
 // object.
 func GetObject(
-	source *resource,
+	source *Resource,
 	allowMissing bool,
 ) error {
 	namespacedName := types.NamespacedName{

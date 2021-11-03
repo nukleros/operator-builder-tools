@@ -29,7 +29,7 @@ type ResourceCommon struct {
 }
 
 // resource represents any kubernetes resource.
-type resource struct {
+type Resource struct {
 	ResourceCommon
 	resourceChecker resourceChecker
 
@@ -41,14 +41,14 @@ type resource struct {
 // resourceChecker is an interface which allows checking of a resource to see
 // if it is in a ready state.
 type resourceChecker interface {
-	IsReady(*resource) (bool, error)
+	IsReady(*Resource) (bool, error)
 	GetParent() client.Object
 }
 
 // NewResource returns a new resource given a client object and a kubernetes api client
 // to use for interacting with cluster objects.
-func NewResource(object client.Object, apiClient client.Client, ctx context.Context) *resource {
-	newResource := &resource{
+func NewResource(object client.Object, apiClient client.Client, ctx context.Context) *Resource {
+	newResource := &Resource{
 		Object:  object,
 		Client:  apiClient,
 		Context: ctx,

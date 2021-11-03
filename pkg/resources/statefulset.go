@@ -30,7 +30,7 @@ func (statefulSet *StatefulSetResource) GetParent() client.Object {
 }
 
 // IsReady performs the logic to determine if a secret is ready.
-func (statefulSet *StatefulSetResource) IsReady(resource *resource) (bool, error) {
+func (statefulSet *StatefulSetResource) IsReady(resource *Resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if statefulSet.parent.Name == "" {
 		return false, nil

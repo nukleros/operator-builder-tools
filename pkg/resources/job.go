@@ -32,7 +32,7 @@ func (job *JobResource) GetParent() client.Object {
 }
 
 // IsReady checks to see if a job is ready.
-func (job *JobResource) IsReady(resource *resource) (bool, error) {
+func (job *JobResource) IsReady(resource *Resource) (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if job.parent.Name == "" {
 		return false, nil
