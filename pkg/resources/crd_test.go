@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	v1 "k8s.io/api/core/v1"
 	extensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -31,14 +30,6 @@ func TestNewCRDResource(t *testing.T) {
 			wantErr: false,
 			args: args{
 				object: &extensionsv1.CustomResourceDefinition{},
-			},
-		},
-		{
-			name:    "crd should not be created",
-			want:    nil,
-			wantErr: true,
-			args: args{
-				object: &v1.Namespace{},
 			},
 		},
 	}

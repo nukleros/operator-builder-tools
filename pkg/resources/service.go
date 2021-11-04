@@ -43,8 +43,10 @@ func (service *ServiceResource) IsReady() (bool, error) {
 	}
 
 	// ensure a cluster ip address exists for cluster ip types
-	if service.Object.Spec.ClusterIP != v1.ClusterIPNone && service.Object.Spec.ClusterIP == "" {
-		return false, nil
+	if service.Object.Spec.Type == v1.ServiceTypeClusterIP {
+		if service.Object.Spec.ClusterIP == "" && len(service.Object.Spec.ClusterIPs) == 0 {
+			return false, nil
+		}
 	}
 
 	// ensure a load balancer ip or hostname is present

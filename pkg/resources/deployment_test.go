@@ -91,23 +91,22 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			},
 		},
 		{
-			name:    "deployment should not be ready (observed generation)",
+			name:    "deployment should not be ready (unavailable replicas)",
 			want:    false,
 			wantErr: false,
 			fields: fields{
 				parent: &appsv1.Deployment{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:       "not-ready-generation",
-						Namespace:  "not-ready-generation",
-						Generation: int64(randomInt),
+						Name:      "not-ready-unavailable",
+						Namespace: "not-ready-unavailable",
 					},
 					Spec: appsv1.DeploymentSpec{
 						Replicas: &randomInt,
 					},
 					Status: appsv1.DeploymentStatus{
-						Replicas:           randomInt,
-						ReadyReplicas:      randomInt,
-						ObservedGeneration: int64(randomInt + 1),
+						Replicas:            randomInt,
+						ReadyReplicas:       randomInt,
+						UnavailableReplicas: 1,
 					},
 				},
 			},
@@ -156,14 +155,6 @@ func TestNewDeploymentResource(t *testing.T) {
 			wantErr: false,
 			args: args{
 				object: &appsv1.Deployment{},
-			},
-		},
-		{
-			name:    "deployment should not be created",
-			want:    nil,
-			wantErr: true,
-			args: args{
-				object: &appsv1.DaemonSet{},
 			},
 		},
 	}

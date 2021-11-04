@@ -5,8 +5,6 @@
 package resources
 
 import (
-	"reflect"
-
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -39,18 +37,13 @@ func (deployment *DeploymentResource) IsReady() (bool, error) {
 		return false, nil
 	}
 
-	// if the object is equal to an empty object, we know we did not find the object
-	if reflect.DeepEqual(deployment, &appsv1.Deployment{}) {
-		return false, nil
-	}
-
-	// rely on observed generation to give us a proper status
-	if deployment.Object.Generation != deployment.Object.Status.ObservedGeneration {
-		return false, nil
-	}
-
 	// check the status for a ready deployment
 	if deployment.Object.Status.ReadyReplicas != deployment.Object.Status.Replicas {
+		return false, nil
+	}
+
+	// ensure that there are no replicas that are unavailable
+	if deployment.Object.Status.UnavailableReplicas > 0 {
 		return false, nil
 	}
 

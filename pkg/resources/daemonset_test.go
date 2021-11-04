@@ -32,14 +32,6 @@ func TestNewDaemonSetResource(t *testing.T) {
 				object: &appsv1.DaemonSet{},
 			},
 		},
-		{
-			name:    "daemonset should not be created",
-			want:    nil,
-			wantErr: true,
-			args: args{
-				object: &appsv1.Deployment{},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -31,14 +30,6 @@ func TestNewJobResource(t *testing.T) {
 			wantErr: false,
 			args: args{
 				object: &batchv1.Job{},
-			},
-		},
-		{
-			name:    "job should not be created",
-			want:    nil,
-			wantErr: true,
-			args: args{
-				object: &appsv1.DaemonSet{},
 			},
 		},
 	}

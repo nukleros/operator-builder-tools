@@ -29,11 +29,6 @@ func ToUnstructured(resource metav1.Object) (*unstructured.Unstructured, error) 
 
 // ToProper returns the proper object representation of a resource.
 func ToProper(destination metav1.Object, source metav1.Object) error {
-	// ensure we are working with the same types
-	if reflect.TypeOf(source) != reflect.TypeOf(destination) {
-		return fmt.Errorf("type mismatch when converting to proper object")
-	}
-
 	// convert the source object to an unstructured type
 	unstructuredObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(source)
 	if err != nil {
@@ -93,6 +88,7 @@ func AreReady(resources ...metav1.Object) (bool, error) {
 	for _, rsrc := range resources {
 		ready, err := IsReady(rsrc)
 		if !ready || err != nil {
+			fmt.Printf("%s is not ready\n", rsrc.GetName())
 			return false, err
 		}
 	}

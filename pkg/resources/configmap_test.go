@@ -32,14 +32,6 @@ func TestNewConfigMapResource(t *testing.T) {
 				object: &v1.ConfigMap{},
 			},
 		},
-		{
-			name:    "configmap should not be created",
-			want:    nil,
-			wantErr: true,
-			args: args{
-				object: &v1.Namespace{},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
