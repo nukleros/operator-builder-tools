@@ -17,13 +17,13 @@ const (
 )
 
 type DaemonSetResource struct {
-	parent *appsv1.DaemonSet
+	appsv1.DaemonSet
 }
 
 // NewDaemonSetResource creates and returns a new DaemonSetResource.
 func NewDaemonSetResource(name, namespace string) *DaemonSetResource {
 	return &DaemonSetResource{
-		parent: &appsv1.DaemonSet{
+		appsv1.DaemonSet{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       DaemonSetKind,
 				APIVersion: DaemonSetVersion,
@@ -38,14 +38,14 @@ func NewDaemonSetResource(name, namespace string) *DaemonSetResource {
 
 // GetParent returns the parent attribute of the resource.
 func (daemonSet *DaemonSetResource) GetParent() client.Object {
-	return daemonSet.parent
+	return daemonSet
 }
 
 // DaemonSetIsReady checks to see if a daemonset is ready.
-func (daemonSet *DaemonSetResource) IsReady(resource *Resource) (bool, error) {
+func (daemonSet *DaemonSetResource) IsReady() (bool, error) {
 	// ensure the desired number is scheduled and ready
-	if daemonSet.parent.Status.DesiredNumberScheduled == daemonSet.parent.Status.NumberReady {
-		if daemonSet.parent.Status.NumberReady > 0 && daemonSet.parent.Status.NumberUnavailable < 1 {
+	if daemonSet.Status.DesiredNumberScheduled == daemonSet.Status.NumberReady {
+		if daemonSet.Status.NumberReady > 0 && daemonSet.Status.NumberUnavailable < 1 {
 			return true, nil
 		}
 	}

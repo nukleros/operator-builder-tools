@@ -18,13 +18,9 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 	type fields struct {
 		parent *appsv1.Deployment
 	}
-	type args struct {
-		resource *Resource
-	}
 	tests := []struct {
 		name    string
 		fields  fields
-		args    args
 		want    bool
 		wantErr bool
 	}{
@@ -32,14 +28,6 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			name:    "deployment should be ready",
 			want:    true,
 			wantErr: false,
-			args: args{
-				resource: &Resource{
-					ResourceCommon: ResourceCommon{
-						Name:      "ready",
-						Namespace: "ready",
-					},
-				},
-			},
 			fields: fields{
 				parent: &appsv1.Deployment{
 					ObjectMeta: metav1.ObjectMeta{
@@ -62,14 +50,6 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			name:    "deployment should not be ready (replicas)",
 			want:    false,
 			wantErr: false,
-			args: args{
-				resource: &Resource{
-					ResourceCommon: ResourceCommon{
-						Name:      "not-ready-replicas",
-						Namespace: "not-ready-replicas",
-					},
-				},
-			},
 			fields: fields{
 				parent: &appsv1.Deployment{
 					ObjectMeta: metav1.ObjectMeta{
@@ -92,14 +72,6 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			name:    "deployment should not be ready (name)",
 			want:    false,
 			wantErr: false,
-			args: args{
-				resource: &Resource{
-					ResourceCommon: ResourceCommon{
-						Name:      "not-ready-name",
-						Namespace: "not-ready-name",
-					},
-				},
-			},
 			fields: fields{
 				parent: &appsv1.Deployment{
 					ObjectMeta: metav1.ObjectMeta{
@@ -121,14 +93,6 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			name:    "deployment should not be ready (observed generation)",
 			want:    false,
 			wantErr: false,
-			args: args{
-				resource: &Resource{
-					ResourceCommon: ResourceCommon{
-						Name:      "not-ready-generation",
-						Namespace: "not-ready-generation",
-					},
-				},
-			},
 			fields: fields{
 				parent: &appsv1.Deployment{
 					ObjectMeta: metav1.ObjectMeta{
@@ -151,7 +115,6 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			name:    "deployment should not be ready (empty)",
 			want:    false,
 			wantErr: false,
-			args:    args{},
 			fields: fields{
 				parent: &appsv1.Deployment{},
 			},
@@ -160,9 +123,9 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			deployment := &DeploymentResource{
-				parent: tt.fields.parent,
+				*tt.fields.parent,
 			}
-			got, err := deployment.IsReady(tt.args.resource)
+			got, err := deployment.IsReady()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DeploymentResource.IsReady() error = %v, wantErr %v", err, tt.wantErr)
 				return

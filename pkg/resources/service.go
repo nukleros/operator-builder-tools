@@ -17,13 +17,13 @@ const (
 )
 
 type ServiceResource struct {
-	parent *v1.Service
+	v1.Service
 }
 
 // NewServiceResource creates and returns a new ServiceResource.
 func NewServiceResource(name, namespace string) *ServiceResource {
 	return &ServiceResource{
-		parent: &v1.Service{
+		v1.Service{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       ServiceKind,
 				APIVersion: ServiceVersion,
@@ -38,29 +38,29 @@ func NewServiceResource(name, namespace string) *ServiceResource {
 
 // GetParent returns the parent attribute of the resource.
 func (service *ServiceResource) GetParent() client.Object {
-	return service.parent
+	return service
 }
 
 // IsReady checks to see if a job is ready.
-func (service *ServiceResource) IsReady(resource *Resource) (bool, error) {
+func (service *ServiceResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if service.parent.Name == "" {
+	if service.Name == "" {
 		return false, nil
 	}
 
 	// return if we have an external service type
-	if service.parent.Spec.Type == v1.ServiceTypeExternalName {
+	if service.Spec.Type == v1.ServiceTypeExternalName {
 		return true, nil
 	}
 
 	// ensure a cluster ip address exists for cluster ip types
-	if service.parent.Spec.ClusterIP != v1.ClusterIPNone && service.parent.Spec.ClusterIP == "" {
+	if service.Spec.ClusterIP != v1.ClusterIPNone && service.Spec.ClusterIP == "" {
 		return false, nil
 	}
 
 	// ensure a load balancer ip or hostname is present
-	if service.parent.Spec.Type == v1.ServiceTypeLoadBalancer {
-		if len(service.parent.Status.LoadBalancer.Ingress) == 0 {
+	if service.Spec.Type == v1.ServiceTypeLoadBalancer {
+		if len(service.Status.LoadBalancer.Ingress) == 0 {
 			return false, nil
 		}
 	}

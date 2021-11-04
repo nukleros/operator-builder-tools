@@ -17,13 +17,13 @@ const (
 )
 
 type CRDResource struct {
-	parent *extensionsv1.CustomResourceDefinition
+	extensionsv1.CustomResourceDefinition
 }
 
 // NewCRDResource creates and returns a new CRDResource.
 func NewCRDResource(name, namespace string) *CRDResource {
 	return &CRDResource{
-		parent: &extensionsv1.CustomResourceDefinition{
+		extensionsv1.CustomResourceDefinition{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       CustomResourceDefinitionKind,
 				APIVersion: CustomResourceDefinitionVersion,
@@ -38,13 +38,13 @@ func NewCRDResource(name, namespace string) *CRDResource {
 
 // GetParent returns the parent attribute of the resource.
 func (crd *CRDResource) GetParent() client.Object {
-	return crd.parent
+	return crd
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.
-func (crd *CRDResource) IsReady(resource *Resource) (bool, error) {
+func (crd *CRDResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if crd.parent.Name == "" {
+	if crd.Name == "" {
 		return false, nil
 	}
 

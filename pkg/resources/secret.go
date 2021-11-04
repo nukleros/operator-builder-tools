@@ -17,13 +17,13 @@ const (
 )
 
 type SecretResource struct {
-	parent *v1.Secret
+	v1.Secret
 }
 
 // NewSecretResource creates and returns a new SecretResource.
 func NewSecretResource(name, namespace string) *SecretResource {
 	return &SecretResource{
-		parent: &v1.Secret{
+		v1.Secret{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       SecretKind,
 				APIVersion: SecretVersion,
@@ -38,13 +38,13 @@ func NewSecretResource(name, namespace string) *SecretResource {
 
 // GetParent returns the parent attribute of the resource.
 func (secret *SecretResource) GetParent() client.Object {
-	return secret.parent
+	return secret
 }
 
 // IsReady checks to see if a secret is ready.
-func (secret *SecretResource) IsReady(resource *Resource) (bool, error) {
+func (secret *SecretResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if secret.parent.Name == "" {
+	if secret.Name == "" {
 		return false, nil
 	}
 

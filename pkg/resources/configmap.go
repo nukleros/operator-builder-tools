@@ -17,13 +17,13 @@ const (
 )
 
 type ConfigMapResource struct {
-	parent *v1.ConfigMap
+	v1.ConfigMap
 }
 
 // NewConfigMapResource creates and returns a new ConfigMapResource.
 func NewConfigMapResource(name, namespace string) *ConfigMapResource {
 	return &ConfigMapResource{
-		parent: &v1.ConfigMap{
+		v1.ConfigMap{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       ConfigMapKind,
 				APIVersion: ConfigMapVersion,
@@ -38,13 +38,13 @@ func NewConfigMapResource(name, namespace string) *ConfigMapResource {
 
 // GetParent returns the parent attribute of the resource.
 func (configMap *ConfigMapResource) GetParent() client.Object {
-	return configMap.parent
+	return configMap
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.
-func (configMap *ConfigMapResource) IsReady(resource *Resource) (bool, error) {
+func (configMap *ConfigMapResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if configMap.parent.Name == "" {
+	if configMap.Name == "" {
 		return false, nil
 	}
 
