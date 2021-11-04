@@ -63,7 +63,7 @@ func NamespaceForResourceIsReady(rsrc *Resource) (bool, error) {
 	rsrc.setResourceChecker()
 
 	// get the object from the kubernetes cluster
-	if err := GetObject(rsrc, true); err != nil {
+	if err := GetObject(rsrc); err != nil {
 		return false, err
 	}
 

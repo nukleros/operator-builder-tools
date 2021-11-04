@@ -98,7 +98,7 @@ func (resource *Resource) Wait() error {
 // than stopping entirely.
 func (resource *Resource) IsReady() (bool, error) {
 	// get the object from the kubernetes cluster
-	if err := GetObject(resource, true); err != nil {
+	if err := GetObject(resource); err != nil {
 		return false, err
 	}
 
@@ -188,10 +188,7 @@ func (resource *Resource) EqualGVK(compared *Resource) bool {
 
 // GetObject returns an object based on an input object, and a destination
 // object.
-func GetObject(
-	source *Resource,
-	allowMissing bool,
-) error {
+func GetObject(source *Resource) error {
 	namespacedName := types.NamespacedName{
 		Name:      source.Name,
 		Namespace: source.Namespace,
@@ -202,11 +199,8 @@ func GetObject(
 		namespacedName,
 		source.resourceChecker.GetParent(),
 	); err != nil {
-		if allowMissing {
-			if errors.IsNotFound(err) {
-				return nil
-			}
-		} else {
+		// if we have anything but an IsNotFound error, return the error
+		if !errors.IsNotFound(err) {
 			return fmt.Errorf(
 				"unable to fetch resource of kind: [%s] in namespaced name: [%v]; %w",
 				source.Kind,
