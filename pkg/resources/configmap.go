@@ -15,29 +15,25 @@ const (
 )
 
 type ConfigMapResource struct {
-	v1.ConfigMap
+	Object v1.ConfigMap
 }
 
 // NewConfigMapResource creates and returns a new ConfigMapResource.
-func NewConfigMapResource(name, namespace string) *ConfigMapResource {
-	return &ConfigMapResource{
-		v1.ConfigMap{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       ConfigMapKind,
-				APIVersion: ConfigMapVersion,
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		},
+func NewConfigMapResource(object metav1.Object) (*ConfigMapResource, error) {
+	configMap := &v1.ConfigMap{}
+
+	err := ToProper(configMap, object)
+	if err != nil {
+		return nil, err
 	}
+
+	return &ConfigMapResource{Object: *configMap}, nil
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.
 func (configMap *ConfigMapResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if configMap.Name == "" {
+	if configMap.Object.Name == "" {
 		return false, nil
 	}
 

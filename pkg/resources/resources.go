@@ -17,7 +17,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-// ToUnstructured returns an unstructured representation of a Resource.
+// ToUnstructured returns an unstructured representation of a resource.
 func ToUnstructured(resource metav1.Object) (*unstructured.Unstructured, error) {
 	innerObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(resource)
 	if err != nil {
@@ -27,35 +27,50 @@ func ToUnstructured(resource metav1.Object) (*unstructured.Unstructured, error) 
 	return &unstructured.Unstructured{Object: innerObject}, nil
 }
 
+// ToProper returns the proper object representation of a resource.
+func ToProper(destination metav1.Object, source metav1.Object) error {
+	// ensure we are working with the same types
+	if reflect.TypeOf(source) != reflect.TypeOf(destination) {
+		return fmt.Errorf("type mismatch when converting to proper object")
+	}
+
+	// convert the source object to an unstructured type
+	unstructuredObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(source)
+	if err != nil {
+		return err
+	}
+
+	// return the outcome of converting the unstructured type to its proper type
+	return runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredObject, destination)
+}
+
 func getResourceChecker(resource metav1.Object) (resourceChecker, error) {
 	runtimeObj, ok := resource.(runtime.Object)
 	if !ok {
 		return nil, fmt.Errorf("unable to convert metav1.Obect to runtime.Object")
 	}
 
-	name, namespace := resource.GetName(), resource.GetNamespace()
-
 	switch runtimeObj.GetObjectKind().GroupVersionKind().Kind {
 	case NamespaceKind:
-		return NewNamespaceResource(name, namespace), nil
+		return NewNamespaceResource(resource)
 	case CustomResourceDefinitionKind:
-		return NewCRDResource(name, namespace), nil
+		return NewCRDResource(resource)
 	case SecretKind:
-		return NewSecretResource(name, namespace), nil
+		return NewSecretResource(resource)
 	case ConfigMapKind:
-		return NewConfigMapResource(name, namespace), nil
+		return NewConfigMapResource(resource)
 	case DeploymentKind:
-		return NewDeploymentResource(name, namespace), nil
+		return NewDeploymentResource(resource)
 	case DaemonSetKind:
-		return NewDaemonSetResource(name, namespace), nil
+		return NewDaemonSetResource(resource)
 	case StatefulSetKind:
-		return NewStatefulSetResource(name, namespace), nil
+		return NewStatefulSetResource(resource)
 	case JobKind:
-		return NewJobResource(name, namespace), nil
+		return NewJobResource(resource)
 	case ServiceKind:
-		return NewServiceResource(name, namespace), nil
+		return NewServiceResource(resource)
 	default:
-		return NewUnknownResource(name, namespace), nil
+		return NewUnknownResource(resource)
 	}
 }
 

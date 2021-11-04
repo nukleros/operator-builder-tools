@@ -15,29 +15,25 @@ const (
 )
 
 type CRDResource struct {
-	extensionsv1.CustomResourceDefinition
+	Object extensionsv1.CustomResourceDefinition
 }
 
 // NewCRDResource creates and returns a new CRDResource.
-func NewCRDResource(name, namespace string) *CRDResource {
-	return &CRDResource{
-		extensionsv1.CustomResourceDefinition{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       CustomResourceDefinitionKind,
-				APIVersion: CustomResourceDefinitionVersion,
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		},
+func NewCRDResource(object metav1.Object) (*CRDResource, error) {
+	crd := &extensionsv1.CustomResourceDefinition{}
+
+	err := ToProper(crd, object)
+	if err != nil {
+		return nil, err
 	}
+
+	return &CRDResource{Object: *crd}, nil
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.
 func (crd *CRDResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if crd.Name == "" {
+	if crd.Object.Name == "" {
 		return false, nil
 	}
 

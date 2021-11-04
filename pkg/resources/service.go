@@ -15,45 +15,41 @@ const (
 )
 
 type ServiceResource struct {
-	v1.Service
+	Object v1.Service
 }
 
 // NewServiceResource creates and returns a new ServiceResource.
-func NewServiceResource(name, namespace string) *ServiceResource {
-	return &ServiceResource{
-		v1.Service{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       ServiceKind,
-				APIVersion: ServiceVersion,
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		},
+func NewServiceResource(object metav1.Object) (*ServiceResource, error) {
+	service := &v1.Service{}
+
+	err := ToProper(service, object)
+	if err != nil {
+		return nil, err
 	}
+
+	return &ServiceResource{Object: *service}, nil
 }
 
 // IsReady checks to see if a job is ready.
 func (service *ServiceResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if service.Name == "" {
+	if service.Object.Name == "" {
 		return false, nil
 	}
 
 	// return if we have an external service type
-	if service.Spec.Type == v1.ServiceTypeExternalName {
+	if service.Object.Spec.Type == v1.ServiceTypeExternalName {
 		return true, nil
 	}
 
 	// ensure a cluster ip address exists for cluster ip types
-	if service.Spec.ClusterIP != v1.ClusterIPNone && service.Spec.ClusterIP == "" {
+	if service.Object.Spec.ClusterIP != v1.ClusterIPNone && service.Object.Spec.ClusterIP == "" {
 		return false, nil
 	}
 
 	// ensure a load balancer ip or hostname is present
-	if service.Spec.Type == v1.ServiceTypeLoadBalancer {
-		if len(service.Status.LoadBalancer.Ingress) == 0 {
+	if service.Object.Spec.Type == v1.ServiceTypeLoadBalancer {
+		if len(service.Object.Status.LoadBalancer.Ingress) == 0 {
 			return false, nil
 		}
 	}

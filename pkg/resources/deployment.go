@@ -17,29 +17,25 @@ const (
 )
 
 type DeploymentResource struct {
-	appsv1.Deployment
+	Object appsv1.Deployment
 }
 
 // NewDeploymentResource creates and returns a new DeploymentResource.
-func NewDeploymentResource(name, namespace string) *DeploymentResource {
-	return &DeploymentResource{
-		appsv1.Deployment{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       DeploymentKind,
-				APIVersion: DeploymentVersion,
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		},
+func NewDeploymentResource(object metav1.Object) (*DeploymentResource, error) {
+	deployment := &appsv1.Deployment{}
+
+	err := ToProper(deployment, object)
+	if err != nil {
+		return nil, err
 	}
+
+	return &DeploymentResource{Object: *deployment}, nil
 }
 
 // IsReady performs the logic to determine if a deployment is ready.
 func (deployment *DeploymentResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if deployment.Name == "" {
+	if deployment.Object.Name == "" {
 		return false, nil
 	}
 
@@ -49,12 +45,12 @@ func (deployment *DeploymentResource) IsReady() (bool, error) {
 	}
 
 	// rely on observed generation to give us a proper status
-	if deployment.Generation != deployment.Status.ObservedGeneration {
+	if deployment.Object.Generation != deployment.Object.Status.ObservedGeneration {
 		return false, nil
 	}
 
 	// check the status for a ready deployment
-	if deployment.Status.ReadyReplicas != deployment.Status.Replicas {
+	if deployment.Object.Status.ReadyReplicas != deployment.Object.Status.Replicas {
 		return false, nil
 	}
 

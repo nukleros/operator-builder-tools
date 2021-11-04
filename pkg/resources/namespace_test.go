@@ -5,6 +5,7 @@
 package resources
 
 import (
+	"reflect"
 	"testing"
 
 	v1 "k8s.io/api/core/v1"
@@ -103,7 +104,7 @@ func TestNamespaceResource_IsReady(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			namespace := &NamespaceResource{
-				Namespace: tt.fields.Namespace,
+				Object: tt.fields.Namespace,
 			}
 			got, err := namespace.IsReady()
 			if (err != nil) != tt.wantErr {
@@ -112,6 +113,49 @@ func TestNamespaceResource_IsReady(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("NamespaceResource.IsReady() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewNamespaceResource(t *testing.T) {
+	type args struct {
+		object metav1.Object
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *NamespaceResource
+		wantErr bool
+	}{
+		{
+			name: "namespace should be created",
+			want: &NamespaceResource{
+				Object: v1.Namespace{},
+			},
+			wantErr: false,
+			args: args{
+				object: &v1.Namespace{},
+			},
+		},
+		{
+			name:    "namespace should not be created",
+			want:    nil,
+			wantErr: true,
+			args: args{
+				object: &v1.ConfigMap{},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewNamespaceResource(tt.args.object)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewNamespaceResource() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewNamespaceResource() = %v, want %v", got, tt.want)
 			}
 		})
 	}

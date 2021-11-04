@@ -15,29 +15,25 @@ const (
 )
 
 type SecretResource struct {
-	v1.Secret
+	Object v1.Secret
 }
 
 // NewSecretResource creates and returns a new SecretResource.
-func NewSecretResource(name, namespace string) *SecretResource {
-	return &SecretResource{
-		v1.Secret{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       SecretKind,
-				APIVersion: SecretVersion,
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		},
+func NewSecretResource(object metav1.Object) (*SecretResource, error) {
+	secret := &v1.Secret{}
+
+	err := ToProper(secret, object)
+	if err != nil {
+		return nil, err
 	}
+
+	return &SecretResource{Object: *secret}, nil
 }
 
 // IsReady checks to see if a secret is ready.
 func (secret *SecretResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
-	if secret.Name == "" {
+	if secret.Object.Name == "" {
 		return false, nil
 	}
 

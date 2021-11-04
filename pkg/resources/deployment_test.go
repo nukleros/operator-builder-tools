@@ -5,6 +5,7 @@
 package resources
 
 import (
+	"reflect"
 	"testing"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -132,6 +133,49 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("DeploymentResource.IsReady() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewDeploymentResource(t *testing.T) {
+	type args struct {
+		object metav1.Object
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *DeploymentResource
+		wantErr bool
+	}{
+		{
+			name: "deployment should be created",
+			want: &DeploymentResource{
+				Object: appsv1.Deployment{},
+			},
+			wantErr: false,
+			args: args{
+				object: &appsv1.Deployment{},
+			},
+		},
+		{
+			name:    "deployment should not be created",
+			want:    nil,
+			wantErr: true,
+			args: args{
+				object: &appsv1.DaemonSet{},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewDeploymentResource(tt.args.object)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewDeploymentResource() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewDeploymentResource() = %v, want %v", got, tt.want)
 			}
 		})
 	}

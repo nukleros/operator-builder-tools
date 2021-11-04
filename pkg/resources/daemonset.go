@@ -15,30 +15,26 @@ const (
 )
 
 type DaemonSetResource struct {
-	appsv1.DaemonSet
+	Object appsv1.DaemonSet
 }
 
 // NewDaemonSetResource creates and returns a new DaemonSetResource.
-func NewDaemonSetResource(name, namespace string) *DaemonSetResource {
-	return &DaemonSetResource{
-		appsv1.DaemonSet{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       DaemonSetKind,
-				APIVersion: DaemonSetVersion,
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		},
+func NewDaemonSetResource(object metav1.Object) (*DaemonSetResource, error) {
+	daemonSet := &appsv1.DaemonSet{}
+
+	err := ToProper(daemonSet, object)
+	if err != nil {
+		return nil, err
 	}
+
+	return &DaemonSetResource{Object: *daemonSet}, nil
 }
 
 // DaemonSetIsReady checks to see if a daemonset is ready.
 func (daemonSet *DaemonSetResource) IsReady() (bool, error) {
 	// ensure the desired number is scheduled and ready
-	if daemonSet.Status.DesiredNumberScheduled == daemonSet.Status.NumberReady {
-		if daemonSet.Status.NumberReady > 0 && daemonSet.Status.NumberUnavailable < 1 {
+	if daemonSet.Object.Status.DesiredNumberScheduled == daemonSet.Object.Status.NumberReady {
+		if daemonSet.Object.Status.NumberReady > 0 && daemonSet.Object.Status.NumberUnavailable < 1 {
 			return true, nil
 		}
 	}
