@@ -21,12 +21,16 @@ type DaemonSetResource struct {
 }
 
 // NewDaemonSetResource creates and returns a new DaemonSetResource.
-func NewDaemonSetResource() *DaemonSetResource {
+func NewDaemonSetResource(name, namespace string) *DaemonSetResource {
 	return &DaemonSetResource{
 		parent: &appsv1.DaemonSet{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       DaemonSetKind,
 				APIVersion: DaemonSetVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}

@@ -35,40 +35,37 @@ func (resource *Resource) ToUnstructured() (*unstructured.Unstructured, error) {
 
 // ToCommonResource converts a resources.Resource into a common API resource.
 func (resource *Resource) ToCommonResource() *ResourceCommon {
-	commonResource := &ResourceCommon{}
-
-	// set the inherited fields
-	commonResource.Group = resource.Group
-	commonResource.Version = resource.Version
-	commonResource.Kind = resource.Kind
-	commonResource.Name = resource.Name
-	commonResource.Namespace = resource.Namespace
-
-	return commonResource
+	return &ResourceCommon{
+		Group:     resource.Group,
+		Version:   resource.Version,
+		Kind:      resource.Kind,
+		Name:      resource.Name,
+		Namespace: resource.Namespace,
+	}
 }
 
-func (resource *Resource) setResourceChecker() {
+func (resource *Resource) setResourceChecker(name, namespace string) {
 	switch resource.Kind {
 	case NamespaceKind:
-		resource.resourceChecker = NewNamespaceResource()
+		resource.resourceChecker = NewNamespaceResource(name, namespace)
 	case CustomResourceDefinitionKind:
-		resource.resourceChecker = NewCRDResource()
+		resource.resourceChecker = NewCRDResource(name, namespace)
 	case SecretKind:
-		resource.resourceChecker = NewSecretResource()
+		resource.resourceChecker = NewSecretResource(name, namespace)
 	case ConfigMapKind:
-		resource.resourceChecker = NewConfigMapResource()
+		resource.resourceChecker = NewConfigMapResource(name, namespace)
 	case DeploymentKind:
-		resource.resourceChecker = NewDeploymentResource()
+		resource.resourceChecker = NewDeploymentResource(name, namespace)
 	case DaemonSetKind:
-		resource.resourceChecker = NewDaemonSetResource()
+		resource.resourceChecker = NewDaemonSetResource(name, namespace)
 	case StatefulSetKind:
-		resource.resourceChecker = NewStatefulSetResource()
+		resource.resourceChecker = NewStatefulSetResource(name, namespace)
 	case JobKind:
-		resource.resourceChecker = NewJobResource()
+		resource.resourceChecker = NewJobResource(name, namespace)
 	case ServiceKind:
-		resource.resourceChecker = NewServiceResource()
+		resource.resourceChecker = NewServiceResource(name, namespace)
 	default:
-		resource.resourceChecker = NewUnknownResource()
+		resource.resourceChecker = NewUnknownResource(name, namespace)
 	}
 }
 

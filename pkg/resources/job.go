@@ -23,12 +23,16 @@ type JobResource struct {
 }
 
 // NewJobResource creates and returns a new JobResource.
-func NewJobResource() *JobResource {
+func NewJobResource(name, namespace string) *JobResource {
 	return &JobResource{
 		parent: &batchv1.Job{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       JobKind,
 				APIVersion: JobVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}

@@ -21,12 +21,16 @@ type SecretResource struct {
 }
 
 // NewSecretResource creates and returns a new SecretResource.
-func NewSecretResource() *SecretResource {
+func NewSecretResource(name, namespace string) *SecretResource {
 	return &SecretResource{
 		parent: &v1.Secret{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       SecretKind,
 				APIVersion: SecretVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}

@@ -49,20 +49,20 @@ type resourceChecker interface {
 // to use for interacting with cluster objects.
 func NewResource(object client.Object, apiClient client.Client, ctx context.Context) *Resource {
 	newResource := &Resource{
+		ResourceCommon: ResourceCommon{
+			Group:     object.GetObjectKind().GroupVersionKind().Group,
+			Version:   object.GetObjectKind().GroupVersionKind().Version,
+			Kind:      object.GetObjectKind().GroupVersionKind().Kind,
+			Name:      object.GetName(),
+			Namespace: object.GetNamespace(),
+		},
 		Object:  object,
 		Client:  apiClient,
 		Context: ctx,
 	}
 
-	// set the inherited fields
-	newResource.Group = object.GetObjectKind().GroupVersionKind().Group
-	newResource.Version = object.GetObjectKind().GroupVersionKind().Version
-	newResource.Kind = object.GetObjectKind().GroupVersionKind().Kind
-	newResource.Name = object.GetName()
-	newResource.Namespace = object.GetNamespace()
-
 	// set the resourceChecker object
-	newResource.setResourceChecker()
+	newResource.setResourceChecker(newResource.Name, newResource.Namespace)
 
 	return newResource
 }

@@ -21,12 +21,16 @@ type NamespaceResource struct {
 }
 
 // NewNamespaceResource creates and returns a new NamespaceResource.
-func NewNamespaceResource() *NamespaceResource {
+func NewNamespaceResource(name, namespace string) *NamespaceResource {
 	return &NamespaceResource{
 		parent: &v1.Namespace{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       NamespaceKind,
 				APIVersion: NamespaceVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}
@@ -68,7 +72,7 @@ func NamespaceForResourceIsReady(rsrc *Resource) (bool, error) {
 	namespace.Version = "v1"
 	namespace.Kind = NamespaceKind
 
-	rsrc.setResourceChecker()
+	rsrc.setResourceChecker(namespace.Name, "")
 
 	// get the object from the kubernetes cluster
 	if err := GetObject(rsrc); err != nil {

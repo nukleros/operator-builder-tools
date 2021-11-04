@@ -21,12 +21,16 @@ type StatefulSetResource struct {
 }
 
 // NewStatefulSetResource creates and returns a new StatefulSetResource.
-func NewStatefulSetResource() *StatefulSetResource {
+func NewStatefulSetResource(name, namespace string) *StatefulSetResource {
 	return &StatefulSetResource{
 		parent: &appsv1.StatefulSet{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       StatefulSetKind,
 				APIVersion: StatefulSetVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}

@@ -21,12 +21,16 @@ type ConfigMapResource struct {
 }
 
 // NewConfigMapResource creates and returns a new ConfigMapResource.
-func NewConfigMapResource() *ConfigMapResource {
+func NewConfigMapResource(name, namespace string) *ConfigMapResource {
 	return &ConfigMapResource{
 		parent: &v1.ConfigMap{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       ConfigMapKind,
 				APIVersion: ConfigMapVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}

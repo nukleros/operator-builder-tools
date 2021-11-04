@@ -21,12 +21,16 @@ type ServiceResource struct {
 }
 
 // NewServiceResource creates and returns a new ServiceResource.
-func NewServiceResource() *ServiceResource {
+func NewServiceResource(name, namespace string) *ServiceResource {
 	return &ServiceResource{
 		parent: &v1.Service{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       ServiceKind,
 				APIVersion: ServiceVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}

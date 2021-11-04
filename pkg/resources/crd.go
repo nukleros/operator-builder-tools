@@ -21,12 +21,16 @@ type CRDResource struct {
 }
 
 // NewCRDResource creates and returns a new CRDResource.
-func NewCRDResource() *CRDResource {
+func NewCRDResource(name, namespace string) *CRDResource {
 	return &CRDResource{
 		parent: &extensionsv1.CustomResourceDefinition{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       CustomResourceDefinitionKind,
 				APIVersion: CustomResourceDefinitionVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}

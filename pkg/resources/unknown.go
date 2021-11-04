@@ -11,7 +11,7 @@ import (
 type UnknownResource struct{}
 
 // NewUnknownResource creates and returns a new UnknownResource.
-func NewUnknownResource() *UnknownResource {
+func NewUnknownResource(name, namespace string) *UnknownResource {
 	return &UnknownResource{}
 }
 
@@ -20,7 +20,7 @@ func (unknown *UnknownResource) GetParent() client.Object {
 	return nil
 }
 
-// IsReady performs the logic to determine if a Unknown is ready.
+// IsReady performs the logic to determine if an Unknown resource is ready.
 func (unknown *UnknownResource) IsReady(resource *Resource) (bool, error) {
 	return true, nil
 }

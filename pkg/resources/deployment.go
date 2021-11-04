@@ -23,12 +23,16 @@ type DeploymentResource struct {
 }
 
 // NewDeploymentResource creates and returns a new DeploymentResource.
-func NewDeploymentResource() *DeploymentResource {
+func NewDeploymentResource(name, namespace string) *DeploymentResource {
 	return &DeploymentResource{
 		parent: &appsv1.Deployment{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       DeploymentKind,
 				APIVersion: DeploymentVersion,
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
 			},
 		},
 	}
