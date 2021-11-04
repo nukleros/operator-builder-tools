@@ -9,8 +9,6 @@ import (
 
 	batchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -36,11 +34,6 @@ func NewJobResource(name, namespace string) *JobResource {
 			},
 		},
 	}
-}
-
-// GetParent returns the parent attribute of the resource.
-func (job *JobResource) GetParent() client.Object {
-	return job
 }
 
 // IsReady checks to see if a job is ready.

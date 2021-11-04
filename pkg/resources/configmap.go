@@ -7,8 +7,6 @@ package resources
 import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -34,11 +32,6 @@ func NewConfigMapResource(name, namespace string) *ConfigMapResource {
 			},
 		},
 	}
-}
-
-// GetParent returns the parent attribute of the resource.
-func (configMap *ConfigMapResource) GetParent() client.Object {
-	return configMap
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.

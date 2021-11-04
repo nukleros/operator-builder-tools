@@ -9,8 +9,6 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -36,11 +34,6 @@ func NewDeploymentResource(name, namespace string) *DeploymentResource {
 			},
 		},
 	}
-}
-
-// GetParent returns the parent attribute of the resource.
-func (deployment *DeploymentResource) GetParent() client.Object {
-	return deployment
 }
 
 // IsReady performs the logic to determine if a deployment is ready.

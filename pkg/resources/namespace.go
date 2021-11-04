@@ -7,8 +7,6 @@ package resources
 import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -34,11 +32,6 @@ func NewNamespaceResource(name, namespace string) *NamespaceResource {
 			},
 		},
 	}
-}
-
-// GetParent returns the parent attribute of the resource.
-func (namespace *NamespaceResource) GetParent() client.Object {
-	return namespace
 }
 
 // IsReady defines the criteria for a namespace to be condsidered

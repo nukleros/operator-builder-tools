@@ -17,11 +17,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-const (
-	waitTimeoutSeconds       = 600
-	waitCheckIntervalSeconds = 5
-)
-
 // ToUnstructured returns an unstructured representation of a Resource.
 func ToUnstructured(resource metav1.Object) (*unstructured.Unstructured, error) {
 	innerObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(resource)

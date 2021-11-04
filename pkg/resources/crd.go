@@ -7,8 +7,6 @@ package resources
 import (
 	extensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -34,11 +32,6 @@ func NewCRDResource(name, namespace string) *CRDResource {
 			},
 		},
 	}
-}
-
-// GetParent returns the parent attribute of the resource.
-func (crd *CRDResource) GetParent() client.Object {
-	return crd
 }
 
 // IsReady performs the logic to determine if a ConfigMap is ready.

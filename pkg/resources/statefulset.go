@@ -7,8 +7,6 @@ package resources
 import (
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -34,11 +32,6 @@ func NewStatefulSetResource(name, namespace string) *StatefulSetResource {
 			},
 		},
 	}
-}
-
-// GetParent returns the parent attribute of the resource.
-func (statefulSet *StatefulSetResource) GetParent() client.Object {
-	return statefulSet
 }
 
 // IsReady performs the logic to determine if a secret is ready.
