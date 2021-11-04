@@ -6,11 +6,14 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	SecretKind = "Secret"
+	SecretKind    = "Secret"
+	SecretVersion = "v1"
 )
 
 type SecretResource struct {
@@ -20,7 +23,12 @@ type SecretResource struct {
 // NewSecretResource creates and returns a new SecretResource.
 func NewSecretResource() *SecretResource {
 	return &SecretResource{
-		parent: &v1.Secret{},
+		parent: &v1.Secret{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       SecretKind,
+				APIVersion: SecretVersion,
+			},
+		},
 	}
 }
 

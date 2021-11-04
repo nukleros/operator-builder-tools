@@ -6,11 +6,14 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	ConfigMapKind = "ConfigMap"
+	ConfigMapKind    = "ConfigMap"
+	ConfigMapVersion = "v1"
 )
 
 type ConfigMapResource struct {
@@ -20,7 +23,12 @@ type ConfigMapResource struct {
 // NewConfigMapResource creates and returns a new ConfigMapResource.
 func NewConfigMapResource() *ConfigMapResource {
 	return &ConfigMapResource{
-		parent: &v1.ConfigMap{},
+		parent: &v1.ConfigMap{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       ConfigMapKind,
+				APIVersion: ConfigMapVersion,
+			},
+		},
 	}
 }
 

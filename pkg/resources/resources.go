@@ -97,9 +97,11 @@ func (resource *Resource) Wait() error {
 // so that dependency checks will not fail and reconciliation of resources can happen with errors rather
 // than stopping entirely.
 func (resource *Resource) IsReady() (bool, error) {
-	// get the object from the kubernetes cluster
-	if err := GetObject(resource); err != nil {
-		return false, err
+	if _, isUnknown := resource.resourceChecker.(*UnknownResource); !isUnknown {
+		// get the object from the kubernetes cluster
+		if err := GetObject(resource); err != nil {
+			return false, err
+		}
 	}
 
 	return resource.resourceChecker.IsReady(resource)

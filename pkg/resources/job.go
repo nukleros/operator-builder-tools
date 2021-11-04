@@ -8,11 +8,14 @@ import (
 	"fmt"
 
 	batchv1 "k8s.io/api/batch/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	JobKind = "Job"
+	JobKind    = "Job"
+	JobVersion = "batch/v1"
 )
 
 type JobResource struct {
@@ -22,7 +25,12 @@ type JobResource struct {
 // NewJobResource creates and returns a new JobResource.
 func NewJobResource() *JobResource {
 	return &JobResource{
-		parent: &batchv1.Job{},
+		parent: &batchv1.Job{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       JobKind,
+				APIVersion: JobVersion,
+			},
+		},
 	}
 }
 

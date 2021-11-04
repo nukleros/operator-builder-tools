@@ -6,11 +6,14 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	NamespaceKind = "Namespace"
+	NamespaceKind    = "Namespace"
+	NamespaceVersion = "v1"
 )
 
 type NamespaceResource struct {
@@ -20,7 +23,12 @@ type NamespaceResource struct {
 // NewNamespaceResource creates and returns a new NamespaceResource.
 func NewNamespaceResource() *NamespaceResource {
 	return &NamespaceResource{
-		parent: &v1.Namespace{},
+		parent: &v1.Namespace{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       NamespaceKind,
+				APIVersion: NamespaceVersion,
+			},
+		},
 	}
 }
 

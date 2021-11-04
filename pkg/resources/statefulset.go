@@ -5,22 +5,30 @@
 package resources
 
 import (
-	v1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	StatefulSetKind = "StatefulSet"
+	StatefulSetKind    = "StatefulSet"
+	StatefulSetVersion = "apps/v1"
 )
 
 type StatefulSetResource struct {
-	parent *v1.StatefulSet
+	parent *appsv1.StatefulSet
 }
 
 // NewStatefulSetResource creates and returns a new StatefulSetResource.
 func NewStatefulSetResource() *StatefulSetResource {
 	return &StatefulSetResource{
-		parent: &v1.StatefulSet{},
+		parent: &appsv1.StatefulSet{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       StatefulSetKind,
+				APIVersion: StatefulSetVersion,
+			},
+		},
 	}
 }
 

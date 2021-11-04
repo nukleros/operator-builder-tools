@@ -6,11 +6,14 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	DaemonSetKind = "DaemonSet"
+	DaemonSetKind    = "DaemonSet"
+	DaemonSetVersion = "apps/v1"
 )
 
 type DaemonSetResource struct {
@@ -20,7 +23,12 @@ type DaemonSetResource struct {
 // NewDaemonSetResource creates and returns a new DaemonSetResource.
 func NewDaemonSetResource() *DaemonSetResource {
 	return &DaemonSetResource{
-		parent: &appsv1.DaemonSet{},
+		parent: &appsv1.DaemonSet{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       DaemonSetKind,
+				APIVersion: DaemonSetVersion,
+			},
+		},
 	}
 }
 

@@ -5,13 +5,15 @@
 package resources
 
 import (
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	extensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	CustomResourceDefinitionKind = "CustomResourceDefinition"
+	CustomResourceDefinitionKind    = "CustomResourceDefinition"
+	CustomResourceDefinitionVersion = "CustomResourceDefinition"
 )
 
 type CRDResource struct {
@@ -21,7 +23,12 @@ type CRDResource struct {
 // NewCRDResource creates and returns a new CRDResource.
 func NewCRDResource() *CRDResource {
 	return &CRDResource{
-		parent: &extensionsv1.CustomResourceDefinition{},
+		parent: &extensionsv1.CustomResourceDefinition{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       CustomResourceDefinitionKind,
+				APIVersion: CustomResourceDefinitionVersion,
+			},
+		},
 	}
 }
 

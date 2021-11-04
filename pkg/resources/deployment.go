@@ -8,11 +8,14 @@ import (
 	"reflect"
 
 	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	DeploymentKind = "Deployment"
+	DeploymentKind    = "Deployment"
+	DeploymentVersion = "apps/v1"
 )
 
 type DeploymentResource struct {
@@ -22,7 +25,12 @@ type DeploymentResource struct {
 // NewDeploymentResource creates and returns a new DeploymentResource.
 func NewDeploymentResource() *DeploymentResource {
 	return &DeploymentResource{
-		parent: &appsv1.Deployment{},
+		parent: &appsv1.Deployment{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       DeploymentKind,
+				APIVersion: DeploymentVersion,
+			},
+		},
 	}
 }
 
