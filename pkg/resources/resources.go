@@ -11,6 +11,7 @@ import (
 	"github.com/banzaicloud/k8s-objectmatcher/patch"
 	"github.com/banzaicloud/operator-tools/pkg/reconciler"
 	"github.com/imdario/mergo"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -19,7 +20,7 @@ import (
 
 // ToUnstructured returns an unstructured representation of a resource.
 func ToUnstructured(resource metav1.Object) (*unstructured.Unstructured, error) {
-	innerObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(resource)
+	innerObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&resource)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +89,6 @@ func AreReady(resources ...metav1.Object) (bool, error) {
 	for _, rsrc := range resources {
 		ready, err := IsReady(rsrc)
 		if !ready || err != nil {
-			fmt.Printf("%s is not ready\n", rsrc.GetName())
 			return false, err
 		}
 	}
@@ -98,7 +98,7 @@ func AreReady(resources ...metav1.Object) (bool, error) {
 
 // AreEqual determines if two resources are equal.
 func AreEqual(desired, actual metav1.Object) (bool, error) {
-	mergedResource, err := ToUnstructured(actual)
+	mergedResource, err := ToUnstructured(actual.(client.Object))
 	if err != nil {
 		return false, err
 	}
