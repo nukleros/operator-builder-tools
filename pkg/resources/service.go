@@ -6,7 +6,7 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -19,7 +19,7 @@ type ServiceResource struct {
 }
 
 // NewServiceResource creates and returns a new ServiceResource.
-func NewServiceResource(object metav1.Object) (*ServiceResource, error) {
+func NewServiceResource(object client.Object) (*ServiceResource, error) {
 	service := &v1.Service{}
 
 	err := ToProper(service, object)

@@ -6,7 +6,7 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -19,7 +19,7 @@ type DeploymentResource struct {
 }
 
 // NewDeploymentResource creates and returns a new DeploymentResource.
-func NewDeploymentResource(object metav1.Object) (*DeploymentResource, error) {
+func NewDeploymentResource(object client.Object) (*DeploymentResource, error) {
 	deployment := &appsv1.Deployment{}
 
 	err := ToProper(deployment, object)

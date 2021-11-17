@@ -2,29 +2,34 @@
 	SPDX-License-Identifier: MIT
 */
 
-package resources
+package resources_test
 
 import (
 	"reflect"
 	"testing"
 
 	batchv1 "k8s.io/api/batch/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
 func TestNewJobResource(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		object metav1.Object
+		object client.Object
 	}
+
 	tests := []struct {
 		name    string
 		args    args
-		want    *JobResource
+		want    *resources.JobResource
 		wantErr bool
 	}{
 		{
 			name: "job should be created",
-			want: &JobResource{
+			want: &resources.JobResource{
 				Object: batchv1.Job{},
 			},
 			wantErr: false,
@@ -34,12 +39,17 @@ func TestNewJobResource(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewJobResource(tt.args.object)
+			t.Parallel()
+
+			got, err := resources.NewJobResource(tt.args.object)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewJobResource() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewJobResource() = %v, want %v", got, tt.want)
 			}

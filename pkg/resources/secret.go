@@ -6,7 +6,7 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -19,7 +19,7 @@ type SecretResource struct {
 }
 
 // NewSecretResource creates and returns a new SecretResource.
-func NewSecretResource(object metav1.Object) (*SecretResource, error) {
+func NewSecretResource(object client.Object) (*SecretResource, error) {
 	secret := &v1.Secret{}
 
 	err := ToProper(secret, object)

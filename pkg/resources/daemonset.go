@@ -6,7 +6,7 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -19,7 +19,7 @@ type DaemonSetResource struct {
 }
 
 // NewDaemonSetResource creates and returns a new DaemonSetResource.
-func NewDaemonSetResource(object metav1.Object) (*DaemonSetResource, error) {
+func NewDaemonSetResource(object client.Object) (*DaemonSetResource, error) {
 	daemonSet := &appsv1.DaemonSet{}
 
 	err := ToProper(daemonSet, object)

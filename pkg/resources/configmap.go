@@ -6,7 +6,7 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -19,7 +19,7 @@ type ConfigMapResource struct {
 }
 
 // NewConfigMapResource creates and returns a new ConfigMapResource.
-func NewConfigMapResource(object metav1.Object) (*ConfigMapResource, error) {
+func NewConfigMapResource(object client.Object) (*ConfigMapResource, error) {
 	configMap := &v1.ConfigMap{}
 
 	err := ToProper(configMap, object)

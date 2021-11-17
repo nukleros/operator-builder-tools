@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	batchv1 "k8s.io/api/batch/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -21,11 +21,10 @@ type JobResource struct {
 }
 
 // NewJobResource creates and returns a new JobResource.
-func NewJobResource(object metav1.Object) (*JobResource, error) {
+func NewJobResource(object client.Object) (*JobResource, error) {
 	job := &batchv1.Job{}
 
-	err := ToProper(job, object)
-	if err != nil {
+	if err := ToProper(job, object); err != nil {
 		return nil, err
 	}
 

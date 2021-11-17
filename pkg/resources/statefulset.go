@@ -6,7 +6,7 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -19,7 +19,7 @@ type StatefulSetResource struct {
 }
 
 // NewStatefulSetResource creates and returns a new StatefulSetResource.
-func NewStatefulSetResource(object metav1.Object) (*StatefulSetResource, error) {
+func NewStatefulSetResource(object client.Object) (*StatefulSetResource, error) {
 	statefulSet := &appsv1.StatefulSet{}
 
 	err := ToProper(statefulSet, object)

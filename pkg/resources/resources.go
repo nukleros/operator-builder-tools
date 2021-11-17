@@ -11,15 +11,13 @@ import (
 	"github.com/banzaicloud/k8s-objectmatcher/patch"
 	"github.com/banzaicloud/operator-tools/pkg/reconciler"
 	"github.com/imdario/mergo"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ToUnstructured returns an unstructured representation of a resource.
-func ToUnstructured(resource metav1.Object) (*unstructured.Unstructured, error) {
+func ToUnstructured(resource client.Object) (*unstructured.Unstructured, error) {
 	innerObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&resource)
 	if err != nil {
 		return nil, err
@@ -29,7 +27,7 @@ func ToUnstructured(resource metav1.Object) (*unstructured.Unstructured, error) 
 }
 
 // ToProper returns the proper object representation of a resource.
-func ToProper(destination metav1.Object, source metav1.Object) error {
+func ToProper(destination, source client.Object) error {
 	// convert the source object to an unstructured type
 	unstructuredObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(source)
 	if err != nil {
@@ -40,13 +38,8 @@ func ToProper(destination metav1.Object, source metav1.Object) error {
 	return runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredObject, destination)
 }
 
-func getResourceChecker(resource metav1.Object) (resourceChecker, error) {
-	runtimeObj, ok := resource.(runtime.Object)
-	if !ok {
-		return nil, fmt.Errorf("unable to convert metav1.Obect to runtime.Object")
-	}
-
-	switch runtimeObj.GetObjectKind().GroupVersionKind().Kind {
+func getResourceChecker(resource client.Object) (resourceChecker, error) {
+	switch resource.GetObjectKind().GroupVersionKind().Kind {
 	case NamespaceKind:
 		return NewNamespaceResource(resource)
 	case CustomResourceDefinitionKind:
@@ -73,19 +66,18 @@ func getResourceChecker(resource metav1.Object) (resourceChecker, error) {
 // IsReady returns whether a specific known resource is ready.  Always returns true for unknown resources
 // so that dependency checks will not fail and reconciliation of resources can happen with errors rather
 // than stopping entirely.
-func IsReady(resource metav1.Object) (bool, error) {
-	resourceChecker, err := getResourceChecker(resource)
+func IsReady(resource client.Object) (bool, error) {
+	checker, err := getResourceChecker(resource)
 	if err != nil {
 		return false, fmt.Errorf("unable to determine ready status for resource, %w", err)
-
 	}
 
-	return resourceChecker.IsReady()
+	return checker.IsReady()
 }
 
 // AreReady returns whether resources are ready.  All resources must be ready in order
 // to satisfy the requirement that resources are ready.
-func AreReady(resources ...metav1.Object) (bool, error) {
+func AreReady(resources ...client.Object) (bool, error) {
 	for _, rsrc := range resources {
 		ready, err := IsReady(rsrc)
 		if !ready || err != nil {
@@ -97,8 +89,8 @@ func AreReady(resources ...metav1.Object) (bool, error) {
 }
 
 // AreEqual determines if two resources are equal.
-func AreEqual(desired, actual metav1.Object) (bool, error) {
-	mergedResource, err := ToUnstructured(actual.(client.Object))
+func AreEqual(desired, actual client.Object) (bool, error) {
+	mergedResource, err := ToUnstructured(actual)
 	if err != nil {
 		return false, err
 	}
@@ -125,12 +117,14 @@ func AreEqual(desired, actual metav1.Object) (bool, error) {
 	}
 
 	// merge the overrides from the desired resource into the actual resource
-	mergo.Merge(
+	if err := mergo.Merge(
 		&mergedResource.Object,
 		desiredResource.Object,
 		mergo.WithOverride,
 		mergo.WithSliceDeepCopy,
-	)
+	); err != nil {
+		return false, err
+	}
 
 	// calculate the actual differences
 	diffOptions := []patch.CalculateOption{
@@ -153,7 +147,7 @@ func AreEqual(desired, actual metav1.Object) (bool, error) {
 }
 
 // EqualNamespaceName will compare the namespace and name of two resource objects for equality.
-func EqualNamespaceName(left, right metav1.Object) bool {
+func EqualNamespaceName(left, right client.Object) bool {
 	if left == nil || right == nil {
 		return false
 	}
@@ -162,7 +156,7 @@ func EqualNamespaceName(left, right metav1.Object) bool {
 }
 
 // EqualGVK will compare the GVK of two resource objects for equality.
-func EqualGVK(left, right runtime.Object) bool {
+func EqualGVK(left, right client.Object) bool {
 	if reflect.TypeOf(left) != reflect.TypeOf(right) {
 		return false
 	}

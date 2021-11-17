@@ -2,29 +2,34 @@
 	SPDX-License-Identifier: MIT
 */
 
-package resources
+package resources_test
 
 import (
 	"reflect"
 	"testing"
 
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
 func TestNewDaemonSetResource(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		object metav1.Object
+		object client.Object
 	}
+
 	tests := []struct {
 		name    string
 		args    args
-		want    *DaemonSetResource
+		want    *resources.DaemonSetResource
 		wantErr bool
 	}{
 		{
 			name: "daemonset should be created",
-			want: &DaemonSetResource{
+			want: &resources.DaemonSetResource{
 				Object: appsv1.DaemonSet{},
 			},
 			wantErr: false,
@@ -33,13 +38,19 @@ func TestNewDaemonSetResource(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewDaemonSetResource(tt.args.object)
+			t.Parallel()
+
+			got, err := resources.NewDaemonSetResource(tt.args.object)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewDaemonSetResource() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewDaemonSetResource() = %v, want %v", got, tt.want)
 			}

@@ -6,7 +6,7 @@ package resources
 
 import (
 	extensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -19,11 +19,10 @@ type CRDResource struct {
 }
 
 // NewCRDResource creates and returns a new CRDResource.
-func NewCRDResource(object metav1.Object) (*CRDResource, error) {
+func NewCRDResource(object client.Object) (*CRDResource, error) {
 	crd := &extensionsv1.CustomResourceDefinition{}
 
-	err := ToProper(crd, object)
-	if err != nil {
+	if err := ToProper(crd, object); err != nil {
 		return nil, err
 	}
 

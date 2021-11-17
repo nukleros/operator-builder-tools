@@ -4,12 +4,12 @@
 
 package resources
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import "sigs.k8s.io/controller-runtime/pkg/client"
 
 type UnknownResource struct{}
 
 // NewUnknownResource creates and returns a new UnknownResource.
-func NewUnknownResource(object metav1.Object) (*UnknownResource, error) {
+func NewUnknownResource(object client.Object) (*UnknownResource, error) {
 	return &UnknownResource{}, nil
 }
 

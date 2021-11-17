@@ -2,21 +2,26 @@
 	SPDX-License-Identifier: MIT
 */
 
-package resources
+package resources_test
 
 import (
 	"testing"
 
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
 func TestEqualGVK(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		left  runtime.Object
-		right runtime.Object
+		left  client.Object
+		right client.Object
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -108,9 +113,13 @@ func TestEqualGVK(t *testing.T) {
 			want: false,
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := EqualGVK(tt.args.left, tt.args.right); got != tt.want {
+			t.Parallel()
+
+			if got := resources.EqualGVK(tt.args.left, tt.args.right); got != tt.want {
 				t.Errorf("EqualGVK() = %v, want %v", got, tt.want)
 			}
 		})
@@ -118,10 +127,13 @@ func TestEqualGVK(t *testing.T) {
 }
 
 func TestEqualNamespaceName(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		left  metav1.Object
-		right metav1.Object
+		left  client.Object
+		right client.Object
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -195,9 +207,13 @@ func TestEqualNamespaceName(t *testing.T) {
 			want: false,
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if got := EqualNamespaceName(tt.args.left, tt.args.right); got != tt.want {
+			t.Parallel()
+
+			if got := resources.EqualNamespaceName(tt.args.left, tt.args.right); got != tt.want {
 				t.Errorf("EqualNamespaceName() = %v, want %v", got, tt.want)
 			}
 		})

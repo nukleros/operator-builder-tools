@@ -5,8 +5,14 @@
 package resources
 
 import (
+	"fmt"
+
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/workload"
 )
 
 const (
@@ -19,7 +25,7 @@ type NamespaceResource struct {
 }
 
 // NewNamespaceResource creates and returns a new NamespaceResource.
-func NewNamespaceResource(object metav1.Object) (*NamespaceResource, error) {
+func NewNamespaceResource(object client.Object) (*NamespaceResource, error) {
 	namespace := &v1.Namespace{}
 
 	err := ToProper(namespace, object)
@@ -45,4 +51,24 @@ func (namespace *NamespaceResource) IsReady() (bool, error) {
 
 	// finally, rely on the active field to determine if this namespace is ready
 	return namespace.Object.Status.Phase == v1.NamespaceActive, nil
+}
+
+// NamespaceForResourceIsReady will check to see if the Namespace of a metadata.namespace
+// field of a resource is ready.
+func NamespaceForResourceIsReady(r workload.Reconciler, req *workload.Request, resource client.Object) (bool, error) {
+	namespace := &v1.Namespace{}
+	namespacedName := types.NamespacedName{
+		Name:      resource.GetNamespace(),
+		Namespace: "",
+	}
+
+	if err := r.Get(req.Context, namespacedName, namespace); err != nil {
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+
+		return false, fmt.Errorf("unable to get namespace, %w", err)
+	}
+
+	return IsReady(namespace)
 }
