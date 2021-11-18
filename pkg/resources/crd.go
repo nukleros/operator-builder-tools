@@ -11,7 +11,7 @@ import (
 
 const (
 	CustomResourceDefinitionKind    = "CustomResourceDefinition"
-	CustomResourceDefinitionVersion = "CustomResourceDefinition"
+	CustomResourceDefinitionVersion = "apiextensions.k8s.io/v1"
 )
 
 type CRDResource struct {
