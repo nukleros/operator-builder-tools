@@ -39,6 +39,10 @@ func ToProper(destination, source client.Object) error {
 }
 
 func getResourceChecker(resource client.Object) (resourceChecker, error) {
+	if resource == nil {
+		return nil, fmt.Errorf("no object was found")
+	}
+
 	switch resource.GetObjectKind().GroupVersionKind().Kind {
 	case NamespaceKind:
 		return NewNamespaceResource(resource)
