@@ -34,7 +34,7 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, e
 		}
 
 		resourceObject := status.ToCommonResource(resource)
-		resourceObject.ResourceCondition = condition
+		resourceObject.ChildResourceCondition = condition
 
 		// update the status conditions and return any errors
 		if err := UpdateResourceConditions(r, req, resourceObject); err != nil {
@@ -62,7 +62,7 @@ func UpdateResourceConditions(
 	req *workload.Request,
 	resource *status.ChildResource,
 ) error {
-	req.Workload.SetResourceCondition(resource)
+	req.Workload.SetChildResourceCondition(resource)
 
 	if err := r.Status().Update(req.Context, req.Workload); err != nil {
 		return fmt.Errorf("unable to update Resource Condition for %s, %w", req.Workload.GetWorkloadGVK().Kind, err)
@@ -75,7 +75,7 @@ func UpdateResourceConditions(
 func HandleResourcePhaseExit(
 	resourceCreated bool,
 	resourceErr error,
-) (status.ResourceCondition, bool, error) {
+) (status.ChildResourceCondition, bool, error) {
 	if resourceErr != nil {
 		if !IsOptimisticLockError(resourceErr) {
 			return status.GetFailResourceCondition(resourceErr), false, resourceErr

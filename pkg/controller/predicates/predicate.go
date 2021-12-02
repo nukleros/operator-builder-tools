@@ -58,7 +58,7 @@ func WorkloadPredicates() predicate.Predicate {
 // needsReconciliation performs some simple checks and returns whether or not a
 // resource needs to be updated.
 func needsReconciliation(r workload.Reconciler, req *workload.Request, existing, requested client.Object) bool {
-	// skip if the objects support observed generation and they are equal
+	// reconcile if the objects support observed generation and they are not equal
 	if existing.GetGeneration() > 0 && requested.GetGeneration() > 0 {
 		if existing.GetGeneration() != requested.GetGeneration() {
 			return true

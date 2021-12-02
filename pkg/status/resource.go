@@ -26,11 +26,11 @@ type ChildResource struct {
 	Namespace string `json:"namespace"`
 
 	// ResourceCondition defines the current condition of this resource.
-	ResourceCondition `json:"condition,omitempty"`
+	ChildResourceCondition `json:"condition,omitempty"`
 }
 
-// ResourceCondition describes the condition of a Kubernetes resource managed by the parent object.
-type ResourceCondition struct {
+// ChildResourceCondition describes the condition of a Kubernetes resource managed by the parent object.
+type ChildResourceCondition struct {
 	// Created defines whether this object has been successfully created or not.
 	Created bool `json:"created"`
 
@@ -55,8 +55,8 @@ func ToCommonResource(resource client.Object) *ChildResource {
 }
 
 // GetSuccessCondition defines the success condition for the phase.
-func GetSuccessResourceCondition() ResourceCondition {
-	return ResourceCondition{
+func GetSuccessResourceCondition() ChildResourceCondition {
+	return ChildResourceCondition{
 		Created:      true,
 		LastModified: time.Now().UTC().String(),
 		Message:      "resource creation successful",
@@ -64,8 +64,8 @@ func GetSuccessResourceCondition() ResourceCondition {
 }
 
 // GetPendingCondition defines the pending condition for the phase.
-func GetPendingResourceCondition() ResourceCondition {
-	return ResourceCondition{
+func GetPendingResourceCondition() ChildResourceCondition {
+	return ChildResourceCondition{
 		Created:      false,
 		LastModified: time.Now().UTC().String(),
 		Message:      "Pending Execution of Resource Creation",
@@ -73,8 +73,8 @@ func GetPendingResourceCondition() ResourceCondition {
 }
 
 // GetFailCondition defines the fail condition for the phase.
-func GetFailResourceCondition(err error) ResourceCondition {
-	return ResourceCondition{
+func GetFailResourceCondition(err error) ChildResourceCondition {
+	return ChildResourceCondition{
 		Created:      false,
 		LastModified: time.Now().UTC().String(),
 		Message:      "unable to proceed with resource creation " + err.Error(),

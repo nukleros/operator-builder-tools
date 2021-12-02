@@ -90,7 +90,7 @@ func (registry *Registry) Execute(r workload.Reconciler, req *workload.Request, 
 		)
 
 		proceed, err := phase.definition(r, req)
-		result, err := phase.HandlePhaseExit(r, req, proceed, err)
+		result, err := phase.handlePhaseExit(r, req, proceed, err)
 
 		if err != nil || !proceed {
 			req.Log.V(2).Info(
@@ -114,7 +114,7 @@ func (registry *Registry) Execute(r workload.Reconciler, req *workload.Request, 
 		)
 	}
 
-	return DefaultReconcileResult(), nil
+	return ctrl.Result{}, nil
 }
 
 func (registry *Registry) getPhases(event Event) []*Phase {

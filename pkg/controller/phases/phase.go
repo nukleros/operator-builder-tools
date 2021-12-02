@@ -30,8 +30,13 @@ func (*Phase) DefaultRequeue() ctrl.Result {
 	}
 }
 
-// HandlePhaseExit will perform the steps required to exit a phase.
-func (p *Phase) HandlePhaseExit(
+// DefaultReconcileResult will return the default reconcile result when requeuing is not needed.
+func (p *Phase) DefaultReconcileResult() ctrl.Result {
+	return ctrl.Result{}
+}
+
+// handlePhaseExit will perform the steps required to exit a phase.
+func (p *Phase) handlePhaseExit(
 	r client.StatusClient,
 	req *workload.Request,
 	phaseIsReady bool,
@@ -50,13 +55,13 @@ func (p *Phase) HandlePhaseExit(
 			condition = status.GetFailCondition(p.Name, phaseError)
 		}
 
-		result = DefaultReconcileResult()
+		result = ctrl.Result{}
 	case !phaseIsReady:
 		condition = status.GetPendingCondition(p.Name)
 		result = p.DefaultRequeue()
 	default:
 		condition = status.GetSuccessCondition(p.Name)
-		result = DefaultReconcileResult()
+		result = p.DefaultReconcileResult()
 	}
 
 	// update the status conditions and return any errors

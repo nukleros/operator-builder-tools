@@ -10,6 +10,13 @@ import (
 	"github.com/nukleros/operator-builder-tools/pkg/controller/workload"
 )
 
+// DeletionCompletePhase executes the completion of a reconciliation loop for a delete request.
+func DeletionCompletePhase(r workload.Reconciler, req *workload.Request) (bool, error) {
+	req.Log.Info("successfully deleted")
+
+	return true, nil
+}
+
 func RegisterDeleteHooks(r workload.Reconciler, req *workload.Request) error {
 	myFinalizerName := fmt.Sprintf("%s/Finalizer", req.Workload.GetWorkloadGVK().Group)
 

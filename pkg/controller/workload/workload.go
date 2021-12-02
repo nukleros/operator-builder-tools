@@ -16,15 +16,16 @@ var ErrCollectionNotFound = errors.New("collection not found")
 // Workload represents a Custom Resource that your controller is watching.
 type Workload interface {
 	client.Object
+
 	GetWorkloadGVK() schema.GroupVersionKind
 	GetDependencies() []Workload
 	GetDependencyStatus() bool
 	GetReadyStatus() bool
 	GetPhaseConditions() []*status.PhaseCondition
-	GetResourceConditions() []*status.ChildResource
+	GetChildResourceConditions() []*status.ChildResource
 
 	SetReadyStatus(bool)
 	SetDependencyStatus(bool)
 	SetPhaseCondition(*status.PhaseCondition)
-	SetResourceCondition(*status.ChildResource)
+	SetChildResourceCondition(*status.ChildResource)
 }
