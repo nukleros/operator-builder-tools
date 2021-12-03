@@ -29,10 +29,14 @@ type Registry struct {
 }
 
 // Register is used to add a Phase to the Registry for the provided event loop.
-func (registry *Registry) Register(name string, definition HandlerFunc, event Event) {
+func (registry *Registry) Register(name string, definition HandlerFunc, event Event, options ...PhaseOption) {
 	phase := &Phase{
 		Name:       name,
 		definition: definition,
+	}
+
+	for _, option := range options {
+		option(phase)
 	}
 
 	switch event {

@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/nukleros/operator-builder-tools/pkg/controller/workload"
 	"github.com/nukleros/operator-builder-tools/pkg/status"
@@ -18,15 +17,19 @@ type HandlerFunc func(r workload.Reconciler, req *workload.Request) (proceed boo
 
 // Phase defines a phase of the reconciliation process.
 type Phase struct {
-	Name       string
-	definition HandlerFunc
+	Name          string
+	definition    HandlerFunc
+	requeueResult *ctrl.Result
 }
 
-// DefaultRequeue executes checking for a parent components readiness status.
-func (*Phase) DefaultRequeue() ctrl.Result {
+// Requeue will return the phases reconcile result when requeueing is needed.
+func (p *Phase) Requeue() ctrl.Result {
+	if p.requeueResult != nil {
+		return *p.requeueResult
+	}
+
 	return ctrl.Result{
 		Requeue: true,
-		// RequeueAfter: 5 * time.Second,
 	}
 }
 
@@ -58,7 +61,7 @@ func (p *Phase) handlePhaseExit(
 		result = ctrl.Result{}
 	case !phaseIsReady:
 		condition = status.GetPendingCondition(p.Name)
-		result = p.DefaultRequeue()
+		result = p.Requeue()
 	default:
 		condition = status.GetSuccessCondition(p.Name)
 		result = p.DefaultReconcileResult()
