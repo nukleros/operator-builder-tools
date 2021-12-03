@@ -37,7 +37,7 @@ func (p *Phase) DefaultReconcileResult() ctrl.Result {
 
 // handlePhaseExit will perform the steps required to exit a phase.
 func (p *Phase) handlePhaseExit(
-	r client.StatusClient,
+	r workload.Reconciler,
 	req *workload.Request,
 	phaseIsReady bool,
 	phaseError error,
@@ -80,7 +80,7 @@ func (p *Phase) handlePhaseExit(
 }
 
 // updatePhaseConditions updates the status.conditions field of the parent custom resource.
-func updatePhaseConditions(r client.StatusClient, req *workload.Request, condition *status.PhaseCondition) error {
+func updatePhaseConditions(r workload.Reconciler, req *workload.Request, condition *status.PhaseCondition) error {
 	req.Workload.SetPhaseCondition(condition)
 
 	if err := r.Status().Update(req.Context, req.Workload); err != nil {

@@ -58,7 +58,7 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, e
 
 // UpdateResourceConditions updates the status.resourceConditions field of the parent custom resource.
 func UpdateResourceConditions(
-	r client.StatusClient,
+	r workload.Reconciler,
 	req *workload.Request,
 	resource *status.ChildResource,
 ) error {
