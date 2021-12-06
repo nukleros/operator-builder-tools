@@ -12,11 +12,11 @@ import (
 	"github.com/nukleros/operator-builder-tools/pkg/controller/workload"
 )
 
-// Event is used to convey which lifecycle event we are targeting.
-type Event int32
+// LifecycleEvent is used to convey which lifecycle event we are targeting.
+type LifecycleEvent int32
 
 const (
-	CreateEvent Event = iota
+	CreateEvent LifecycleEvent = iota
 	UpdateEvent
 	DeleteEvent
 )
@@ -29,7 +29,7 @@ type Registry struct {
 }
 
 // Register is used to add a Phase to the Registry for the provided event loop.
-func (registry *Registry) Register(name string, definition HandlerFunc, event Event, options ...PhaseOption) {
+func (registry *Registry) Register(name string, definition HandlerFunc, event LifecycleEvent, options ...PhaseOption) {
 	phase := &Phase{
 		Name:       name,
 		definition: definition,
@@ -85,7 +85,7 @@ func (registry *Registry) HandleExecution(r workload.Reconciler, req *workload.R
 }
 
 // Execute runs the phases for the specified lifecycle event.
-func (registry *Registry) Execute(r workload.Reconciler, req *workload.Request, event Event) (reconcile.Result, error) {
+func (registry *Registry) Execute(r workload.Reconciler, req *workload.Request, event LifecycleEvent) (reconcile.Result, error) {
 	phases := registry.getPhases(event)
 	for _, phase := range phases {
 		req.Log.V(5).Info(
@@ -121,7 +121,7 @@ func (registry *Registry) Execute(r workload.Reconciler, req *workload.Request, 
 	return ctrl.Result{}, nil
 }
 
-func (registry *Registry) getPhases(event Event) []*Phase {
+func (registry *Registry) getPhases(event LifecycleEvent) []*Phase {
 	switch event {
 	case CreateEvent:
 		return registry.createPhases
