@@ -14,6 +14,7 @@ const (
 	DaemonSetVersion = "apps/v1"
 )
 
+// DaemonSetResource represents a Kubernetes Daemonset object.
 type DaemonSetResource struct {
 	Object appsv1.DaemonSet
 }
@@ -30,7 +31,7 @@ func NewDaemonSetResource(object client.Object) (*DaemonSetResource, error) {
 	return &DaemonSetResource{Object: *daemonSet}, nil
 }
 
-// DaemonSetIsReady checks to see if a daemonset is ready.
+// DaemonSetIsReady checks to see if a Daemonset is ready.
 func (daemonSet *DaemonSetResource) IsReady() (bool, error) {
 	// ensure the desired number is scheduled and ready
 	if daemonSet.Object.Status.DesiredNumberScheduled == daemonSet.Object.Status.NumberReady {

@@ -16,6 +16,7 @@ const (
 	JobVersion = "batch/v1"
 )
 
+// JobResource represents a Kubernetes Job object.
 type JobResource struct {
 	Object batchv1.Job
 }
@@ -31,7 +32,7 @@ func NewJobResource(object client.Object) (*JobResource, error) {
 	return &JobResource{Object: *job}, nil
 }
 
-// IsReady checks to see if a job is ready.
+// IsReady checks to see if a Job is ready.
 func (job *JobResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if job.Object.Name == "" {

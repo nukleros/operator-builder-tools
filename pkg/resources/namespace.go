@@ -20,6 +20,7 @@ const (
 	NamespaceVersion = "v1"
 )
 
+// NamespaceResource represents a Kubernetes Namespace object.
 type NamespaceResource struct {
 	Object v1.Namespace
 }
@@ -36,7 +37,7 @@ func NewNamespaceResource(object client.Object) (*NamespaceResource, error) {
 	return &NamespaceResource{Object: *namespace}, nil
 }
 
-// IsReady defines the criteria for a namespace to be condsidered
+// IsReady defines the criteria for a Namespace to be condsidered
 // ready.
 func (namespace *NamespaceResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object

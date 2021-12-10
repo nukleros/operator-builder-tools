@@ -14,6 +14,7 @@ const (
 	ServiceVersion = "v1"
 )
 
+// ServiceResource represents a Kubernetes Service object.
 type ServiceResource struct {
 	Object v1.Service
 }
@@ -30,7 +31,7 @@ func NewServiceResource(object client.Object) (*ServiceResource, error) {
 	return &ServiceResource{Object: *service}, nil
 }
 
-// IsReady checks to see if a job is ready.
+// IsReady checks to see if a Service is ready.
 func (service *ServiceResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if service.Object.Name == "" {

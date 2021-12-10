@@ -14,6 +14,7 @@ const (
 	StatefulSetVersion = "apps/v1"
 )
 
+// StatefulSetResource represents a Kubernetes StatefulSet object.
 type StatefulSetResource struct {
 	Object appsv1.StatefulSet
 }
@@ -30,7 +31,7 @@ func NewStatefulSetResource(object client.Object) (*StatefulSetResource, error) 
 	return &StatefulSetResource{Object: *statefulSet}, nil
 }
 
-// IsReady performs the logic to determine if a secret is ready.
+// IsReady performs the logic to determine if a StatefulSet is ready.
 func (statefulSet *StatefulSetResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if statefulSet.Object.Name == "" {

@@ -14,6 +14,7 @@ const (
 	DeploymentVersion = "apps/v1"
 )
 
+// DeploymentResource represents a Kubernetes Deployment object.
 type DeploymentResource struct {
 	Object appsv1.Deployment
 }
@@ -30,7 +31,7 @@ func NewDeploymentResource(object client.Object) (*DeploymentResource, error) {
 	return &DeploymentResource{Object: *deployment}, nil
 }
 
-// IsReady performs the logic to determine if a deployment is ready.
+// IsReady performs the logic to determine if a Deployment is ready.
 func (deployment *DeploymentResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if deployment.Object.Name == "" {

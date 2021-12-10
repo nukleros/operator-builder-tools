@@ -29,7 +29,7 @@ func NewCRDResource(object client.Object) (*CRDResource, error) {
 	return &CRDResource{Object: *crd}, nil
 }
 
-// IsReady performs the logic to determine if a ConfigMap is ready.
+// IsReady performs the logic to determine if a CRD is ready.
 func (crd *CRDResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if crd.Object.Name == "" {

@@ -6,6 +6,7 @@ package resources
 
 import "sigs.k8s.io/controller-runtime/pkg/client"
 
+// UnknownResource represents an unknown object.
 type UnknownResource struct{}
 
 // NewUnknownResource creates and returns a new UnknownResource.
