@@ -22,7 +22,7 @@ type SecretResource struct {
 func NewSecretResource(object client.Object) (*SecretResource, error) {
 	secret := &v1.Secret{}
 
-	err := ToProper(secret, object)
+	err := ToTyped(secret, object)
 	if err != nil {
 		return nil, err
 	}

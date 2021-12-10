@@ -22,7 +22,7 @@ type CRDResource struct {
 func NewCRDResource(object client.Object) (*CRDResource, error) {
 	crd := &extensionsv1.CustomResourceDefinition{}
 
-	if err := ToProper(crd, object); err != nil {
+	if err := ToTyped(crd, object); err != nil {
 		return nil, err
 	}
 

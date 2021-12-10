@@ -22,7 +22,7 @@ type ConfigMapResource struct {
 func NewConfigMapResource(object client.Object) (*ConfigMapResource, error) {
 	configMap := &v1.ConfigMap{}
 
-	err := ToProper(configMap, object)
+	err := ToTyped(configMap, object)
 	if err != nil {
 		return nil, err
 	}

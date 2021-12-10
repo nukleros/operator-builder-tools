@@ -22,7 +22,7 @@ type DeploymentResource struct {
 func NewDeploymentResource(object client.Object) (*DeploymentResource, error) {
 	deployment := &appsv1.Deployment{}
 
-	err := ToProper(deployment, object)
+	err := ToTyped(deployment, object)
 	if err != nil {
 		return nil, err
 	}

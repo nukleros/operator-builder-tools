@@ -24,7 +24,7 @@ type JobResource struct {
 func NewJobResource(object client.Object) (*JobResource, error) {
 	job := &batchv1.Job{}
 
-	if err := ToProper(job, object); err != nil {
+	if err := ToTyped(job, object); err != nil {
 		return nil, err
 	}
 

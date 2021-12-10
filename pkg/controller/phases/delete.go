@@ -17,6 +17,7 @@ func DeletionCompletePhase(r workload.Reconciler, req *workload.Request) (bool, 
 	return true, nil
 }
 
+// RegisterDeleteHooks add finializers to the workload resources so that the delete lifecycle can be run beofre the object is deleted.
 func RegisterDeleteHooks(r workload.Reconciler, req *workload.Request) error {
 	myFinalizerName := fmt.Sprintf("%s/Finalizer", req.Workload.GetWorkloadGVK().Group)
 

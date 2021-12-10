@@ -13,6 +13,7 @@ import (
 // for use within the rconciliation loop.
 type Reconciler interface {
 	client.Client
+
 	// attribute exporters and setters
 	GetController() controller.Controller
 	GetLogger() logr.Logger

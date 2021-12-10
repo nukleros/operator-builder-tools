@@ -22,7 +22,7 @@ type StatefulSetResource struct {
 func NewStatefulSetResource(object client.Object) (*StatefulSetResource, error) {
 	statefulSet := &appsv1.StatefulSet{}
 
-	err := ToProper(statefulSet, object)
+	err := ToTyped(statefulSet, object)
 	if err != nil {
 		return nil, err
 	}

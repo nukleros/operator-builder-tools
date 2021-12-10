@@ -22,7 +22,7 @@ type ServiceResource struct {
 func NewServiceResource(object client.Object) (*ServiceResource, error) {
 	service := &v1.Service{}
 
-	err := ToProper(service, object)
+	err := ToTyped(service, object)
 	if err != nil {
 		return nil, err
 	}

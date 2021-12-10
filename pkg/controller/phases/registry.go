@@ -121,6 +121,7 @@ func (registry *Registry) Execute(r workload.Reconciler, req *workload.Request, 
 	return ctrl.Result{}, nil
 }
 
+// getPhases returns the phases for a given lifecycle event.
 func (registry *Registry) getPhases(event LifecycleEvent) []*Phase {
 	switch event {
 	case CreateEvent:

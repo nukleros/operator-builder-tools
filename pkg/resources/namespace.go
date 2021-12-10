@@ -28,7 +28,7 @@ type NamespaceResource struct {
 func NewNamespaceResource(object client.Object) (*NamespaceResource, error) {
 	namespace := &v1.Namespace{}
 
-	err := ToProper(namespace, object)
+	err := ToTyped(namespace, object)
 	if err != nil {
 		return nil, err
 	}

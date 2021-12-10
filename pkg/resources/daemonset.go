@@ -22,7 +22,7 @@ type DaemonSetResource struct {
 func NewDaemonSetResource(object client.Object) (*DaemonSetResource, error) {
 	daemonSet := &appsv1.DaemonSet{}
 
-	err := ToProper(daemonSet, object)
+	err := ToTyped(daemonSet, object)
 	if err != nil {
 		return nil, err
 	}

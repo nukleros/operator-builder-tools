@@ -14,6 +14,7 @@ import (
 	"github.com/nukleros/operator-builder-tools/pkg/status"
 )
 
+// CreateResourcesPhase creates or updated the child resources of a workload during a reconciliation loop.
 func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, error) {
 	// get the resources in memory
 	desiredResources, err := r.GetResources(req)
@@ -25,7 +26,7 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, e
 
 	for _, resource := range desiredResources {
 		condition, created, err := HandleResourcePhaseExit(
-			PersistResourcePhase(r, req, resource),
+			persistResourcePhase(r, req, resource),
 		)
 		if err != nil {
 			if !IsOptimisticLockError(err) {
@@ -89,8 +90,8 @@ func HandleResourcePhaseExit(
 	return status.GetSuccessResourceCondition(), true, nil
 }
 
-// PersistResourcePhase executes persisting resources to the Kubernetes database.
-func PersistResourcePhase(
+// persistResourcePhase executes persisting resources to the Kubernetes database.
+func persistResourcePhase(
 	r workload.Reconciler,
 	req *workload.Request,
 	resource client.Object,
