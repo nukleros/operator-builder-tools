@@ -9,7 +9,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// Request holds the state of the current reconcile request
+// Request holds the state of the current reconcile request.
 // This Object can be used to pass state such as context
 // between phases of the controller.
 type Request struct {

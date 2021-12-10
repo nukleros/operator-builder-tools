@@ -26,8 +26,8 @@ func ToUnstructured(resource client.Object) (*unstructured.Unstructured, error) 
 	return &unstructured.Unstructured{Object: innerObject}, nil
 }
 
-// ToProper returns the proper object representation of a resource.
-func ToProper(destination, source client.Object) error {
+// ToTyped returns the proper object representation of a resource.
+func ToTyped(destination, source client.Object) error {
 	// convert the source object to an unstructured type
 	unstructuredObject, err := runtime.DefaultUnstructuredConverter.ToUnstructured(source)
 	if err != nil {

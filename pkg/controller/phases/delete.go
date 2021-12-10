@@ -36,7 +36,7 @@ func RegisterDeleteHooks(r workload.Reconciler, req *workload.Request) error {
 	return nil
 }
 
-// Helper functions to check and remove string from a slice of strings.
+// containsString checks for a string in a slice of strings.
 func containsString(slice []string, s string) bool {
 	for _, item := range slice {
 		if item == s {

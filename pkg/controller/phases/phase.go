@@ -11,8 +11,8 @@ import (
 	"github.com/nukleros/operator-builder-tools/pkg/status"
 )
 
-// HandlerFunc is an adapter ot allow the use of ordinary functions as reconcile phases.
-// if the function has the appropriate signature, it will considered a valid phase handler.
+// HandlerFunc is an adapter to allow the use of ordinary functions as reconcile phases.
+// If the function has the appropriate signature, it will considered a valid phase handler.
 type HandlerFunc func(r workload.Reconciler, req *workload.Request) (proceed bool, err error)
 
 // Phase defines a phase of the reconciliation process.
@@ -22,7 +22,7 @@ type Phase struct {
 	requeueResult *ctrl.Result
 }
 
-// Requeue will return the phases reconcile result when requeueing is needed.
+// Requeue will return the phase's reconcile result when requeueing is needed.
 func (p *Phase) Requeue() ctrl.Result {
 	if p.requeueResult != nil {
 		return *p.requeueResult

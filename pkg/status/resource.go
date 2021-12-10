@@ -8,7 +8,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// ChildResource is the resource and its condition as stored on the object status field.
+// ChildResource is the resource and its condition as stored on the workload custom resource's status field.
 type ChildResource struct {
 	// Group defines the API Group of the resource.
 	Group string `json:"group"`
@@ -54,7 +54,7 @@ func ToCommonResource(resource client.Object) *ChildResource {
 	return resourceCommon
 }
 
-// GetSuccessCondition defines the success condition for the phase.
+// GetSuccessResourceCondition defines the success condition for the phase.
 func GetSuccessResourceCondition() ChildResourceCondition {
 	return ChildResourceCondition{
 		Created:      true,
@@ -63,7 +63,7 @@ func GetSuccessResourceCondition() ChildResourceCondition {
 	}
 }
 
-// GetPendingCondition defines the pending condition for the phase.
+// GetPendingResourceCondition defines the pending condition for the phase.
 func GetPendingResourceCondition() ChildResourceCondition {
 	return ChildResourceCondition{
 		Created:      false,
@@ -72,7 +72,7 @@ func GetPendingResourceCondition() ChildResourceCondition {
 	}
 }
 
-// GetFailCondition defines the fail condition for the phase.
+// GetFailResourceCondition defines the fail condition for the phase.
 func GetFailResourceCondition(err error) ChildResourceCondition {
 	return ChildResourceCondition{
 		Created:      false,

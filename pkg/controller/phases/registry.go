@@ -50,7 +50,7 @@ func (registry *Registry) Register(name string, definition HandlerFunc, event Li
 }
 
 // HandleExecution will trigger the execution of the phases
-// for appropriate lifecycle event. This is the main entrypoint
+// for the appropriate lifecycle event. This is the main entrypoint
 // into our phases.
 func (registry *Registry) HandleExecution(r workload.Reconciler, req *workload.Request) (reconcile.Result, error) {
 	// execute the phases

@@ -11,7 +11,7 @@ import (
 	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
-// CheckReadyPhase executes checking for a parent components readiness status.
+// CheckReadyPhase executes checking for a parent component's readiness status.
 func CheckReadyPhase(r workload.Reconciler, req *workload.Request) (bool, error) {
 	// check to see if known types are ready
 	knownReady, err := resourcesAreReady(r, req)
