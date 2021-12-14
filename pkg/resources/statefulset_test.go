@@ -2,29 +2,34 @@
 	SPDX-License-Identifier: MIT
 */
 
-package resources
+package resources_test
 
 import (
 	"reflect"
 	"testing"
 
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
 func TestNewStatefulSetResource(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		object metav1.Object
+		object client.Object
 	}
+
 	tests := []struct {
 		name    string
 		args    args
-		want    *StatefulSetResource
+		want    *resources.StatefulSetResource
 		wantErr bool
 	}{
 		{
 			name: "statefulset should be created",
-			want: &StatefulSetResource{
+			want: &resources.StatefulSetResource{
 				Object: appsv1.StatefulSet{},
 			},
 			wantErr: false,
@@ -33,13 +38,19 @@ func TestNewStatefulSetResource(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewStatefulSetResource(tt.args.object)
+			t.Parallel()
+
+			got, err := resources.NewStatefulSetResource(tt.args.object)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewStatefulSetResource() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewStatefulSetResource() = %v, want %v", got, tt.want)
 			}

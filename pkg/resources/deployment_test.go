@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: MIT
 */
 
-package resources
+package resources_test
 
 import (
 	"reflect"
@@ -10,15 +10,20 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
 func TestDeploymentResource_IsReady(t *testing.T) {
-	var randomInt int32
-	randomInt = 1
+	t.Parallel()
+
+	var randomInt int32 = 1
 
 	type fields struct {
 		parent *appsv1.Deployment
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -121,15 +126,20 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			deployment := &DeploymentResource{
+			t.Parallel()
+
+			deployment := &resources.DeploymentResource{
 				*tt.fields.parent,
 			}
 			got, err := deployment.IsReady()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DeploymentResource.IsReady() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if got != tt.want {
 				t.Errorf("DeploymentResource.IsReady() = %v, want %v", got, tt.want)
 			}
@@ -138,18 +148,21 @@ func TestDeploymentResource_IsReady(t *testing.T) {
 }
 
 func TestNewDeploymentResource(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		object metav1.Object
+		object client.Object
 	}
+
 	tests := []struct {
 		name    string
 		args    args
-		want    *DeploymentResource
+		want    *resources.DeploymentResource
 		wantErr bool
 	}{
 		{
 			name: "deployment should be created",
-			want: &DeploymentResource{
+			want: &resources.DeploymentResource{
 				Object: appsv1.Deployment{},
 			},
 			wantErr: false,
@@ -158,13 +171,19 @@ func TestNewDeploymentResource(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewDeploymentResource(tt.args.object)
+			t.Parallel()
+
+			got, err := resources.NewDeploymentResource(tt.args.object)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewDeploymentResource() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewDeploymentResource() = %v, want %v", got, tt.want)
 			}

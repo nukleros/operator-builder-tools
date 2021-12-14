@@ -6,7 +6,7 @@ package resources
 
 import (
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -14,15 +14,16 @@ const (
 	ServiceVersion = "v1"
 )
 
+// ServiceResource represents a Kubernetes Service object.
 type ServiceResource struct {
 	Object v1.Service
 }
 
 // NewServiceResource creates and returns a new ServiceResource.
-func NewServiceResource(object metav1.Object) (*ServiceResource, error) {
+func NewServiceResource(object client.Object) (*ServiceResource, error) {
 	service := &v1.Service{}
 
-	err := ToProper(service, object)
+	err := ToTyped(service, object)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +31,7 @@ func NewServiceResource(object metav1.Object) (*ServiceResource, error) {
 	return &ServiceResource{Object: *service}, nil
 }
 
-// IsReady checks to see if a job is ready.
+// IsReady checks to see if a Service is ready.
 func (service *ServiceResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if service.Object.Name == "" {

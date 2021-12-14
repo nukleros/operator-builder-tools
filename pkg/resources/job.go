@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	batchv1 "k8s.io/api/batch/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -16,23 +16,23 @@ const (
 	JobVersion = "batch/v1"
 )
 
+// JobResource represents a Kubernetes Job object.
 type JobResource struct {
 	Object batchv1.Job
 }
 
 // NewJobResource creates and returns a new JobResource.
-func NewJobResource(object metav1.Object) (*JobResource, error) {
+func NewJobResource(object client.Object) (*JobResource, error) {
 	job := &batchv1.Job{}
 
-	err := ToProper(job, object)
-	if err != nil {
+	if err := ToTyped(job, object); err != nil {
 		return nil, err
 	}
 
 	return &JobResource{Object: *job}, nil
 }
 
-// IsReady checks to see if a job is ready.
+// IsReady checks to see if a Job is ready.
 func (job *JobResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if job.Object.Name == "" {

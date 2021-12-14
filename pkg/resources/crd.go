@@ -6,12 +6,12 @@ package resources
 
 import (
 	extensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
 	CustomResourceDefinitionKind    = "CustomResourceDefinition"
-	CustomResourceDefinitionVersion = "CustomResourceDefinition"
+	CustomResourceDefinitionVersion = "apiextensions.k8s.io/v1"
 )
 
 type CRDResource struct {
@@ -19,18 +19,17 @@ type CRDResource struct {
 }
 
 // NewCRDResource creates and returns a new CRDResource.
-func NewCRDResource(object metav1.Object) (*CRDResource, error) {
+func NewCRDResource(object client.Object) (*CRDResource, error) {
 	crd := &extensionsv1.CustomResourceDefinition{}
 
-	err := ToProper(crd, object)
-	if err != nil {
+	if err := ToTyped(crd, object); err != nil {
 		return nil, err
 	}
 
 	return &CRDResource{Object: *crd}, nil
 }
 
-// IsReady performs the logic to determine if a ConfigMap is ready.
+// IsReady performs the logic to determine if a CRD is ready.
 func (crd *CRDResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if crd.Object.Name == "" {

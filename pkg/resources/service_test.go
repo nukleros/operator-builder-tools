@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: MIT
 */
 
-package resources
+package resources_test
 
 import (
 	"reflect"
@@ -10,21 +10,27 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
 func TestNewServiceResource(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		object metav1.Object
+		object client.Object
 	}
+
 	tests := []struct {
 		name    string
 		args    args
-		want    *ServiceResource
+		want    *resources.ServiceResource
 		wantErr bool
 	}{
 		{
 			name: "service should be created",
-			want: &ServiceResource{
+			want: &resources.ServiceResource{
 				Object: v1.Service{},
 			},
 			wantErr: false,
@@ -33,13 +39,20 @@ func TestNewServiceResource(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
+
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewServiceResource(tt.args.object)
+			t.Parallel()
+
+			got, err := resources.NewServiceResource(tt.args.object)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewServiceResource() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewServiceResource() = %v, want %v", got, tt.want)
 			}
@@ -48,9 +61,12 @@ func TestNewServiceResource(t *testing.T) {
 }
 
 func TestServiceResource_IsReady(t *testing.T) {
+	t.Parallel()
+
 	type fields struct {
 		Object v1.Service
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -216,16 +232,22 @@ func TestServiceResource_IsReady(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			service := &ServiceResource{
+			t.Parallel()
+
+			service := &resources.ServiceResource{
 				Object: tt.fields.Object,
 			}
 			got, err := service.IsReady()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ServiceResource.IsReady() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if got != tt.want {
 				t.Errorf("ServiceResource.IsReady() = %v, want %v", got, tt.want)
 			}

@@ -2,7 +2,7 @@
 	SPDX-License-Identifier: MIT
 */
 
-package resources
+package resources_test
 
 import (
 	"reflect"
@@ -10,12 +10,18 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/nukleros/operator-builder-tools/pkg/resources"
 )
 
 func TestNamespaceResource_IsReady(t *testing.T) {
+	t.Parallel()
+
 	type fields struct {
 		Namespace v1.Namespace
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -102,15 +108,20 @@ func TestNamespaceResource_IsReady(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			namespace := &NamespaceResource{
+			t.Parallel()
+
+			namespace := &resources.NamespaceResource{
 				Object: tt.fields.Namespace,
 			}
 			got, err := namespace.IsReady()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NamespaceResource.IsReady() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if got != tt.want {
 				t.Errorf("NamespaceResource.IsReady() = %v, want %v", got, tt.want)
 			}
@@ -119,18 +130,21 @@ func TestNamespaceResource_IsReady(t *testing.T) {
 }
 
 func TestNewNamespaceResource(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
-		object metav1.Object
+		object client.Object
 	}
+
 	tests := []struct {
 		name    string
 		args    args
-		want    *NamespaceResource
+		want    *resources.NamespaceResource
 		wantErr bool
 	}{
 		{
 			name: "namespace should be created",
-			want: &NamespaceResource{
+			want: &resources.NamespaceResource{
 				Object: v1.Namespace{},
 			},
 			wantErr: false,
@@ -139,13 +153,19 @@ func TestNewNamespaceResource(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewNamespaceResource(tt.args.object)
+			t.Parallel()
+
+			got, err := resources.NewNamespaceResource(tt.args.object)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewNamespaceResource() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewNamespaceResource() = %v, want %v", got, tt.want)
 			}

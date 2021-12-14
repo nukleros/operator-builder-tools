@@ -6,7 +6,7 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -14,15 +14,16 @@ const (
 	DaemonSetVersion = "apps/v1"
 )
 
+// DaemonSetResource represents a Kubernetes Daemonset object.
 type DaemonSetResource struct {
 	Object appsv1.DaemonSet
 }
 
 // NewDaemonSetResource creates and returns a new DaemonSetResource.
-func NewDaemonSetResource(object metav1.Object) (*DaemonSetResource, error) {
+func NewDaemonSetResource(object client.Object) (*DaemonSetResource, error) {
 	daemonSet := &appsv1.DaemonSet{}
 
-	err := ToProper(daemonSet, object)
+	err := ToTyped(daemonSet, object)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +31,7 @@ func NewDaemonSetResource(object metav1.Object) (*DaemonSetResource, error) {
 	return &DaemonSetResource{Object: *daemonSet}, nil
 }
 
-// DaemonSetIsReady checks to see if a daemonset is ready.
+// DaemonSetIsReady checks to see if a Daemonset is ready.
 func (daemonSet *DaemonSetResource) IsReady() (bool, error) {
 	// ensure the desired number is scheduled and ready
 	if daemonSet.Object.Status.DesiredNumberScheduled == daemonSet.Object.Status.NumberReady {

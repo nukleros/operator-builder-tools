@@ -6,7 +6,7 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -14,15 +14,16 @@ const (
 	StatefulSetVersion = "apps/v1"
 )
 
+// StatefulSetResource represents a Kubernetes StatefulSet object.
 type StatefulSetResource struct {
 	Object appsv1.StatefulSet
 }
 
 // NewStatefulSetResource creates and returns a new StatefulSetResource.
-func NewStatefulSetResource(object metav1.Object) (*StatefulSetResource, error) {
+func NewStatefulSetResource(object client.Object) (*StatefulSetResource, error) {
 	statefulSet := &appsv1.StatefulSet{}
 
-	err := ToProper(statefulSet, object)
+	err := ToTyped(statefulSet, object)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +31,7 @@ func NewStatefulSetResource(object metav1.Object) (*StatefulSetResource, error) 
 	return &StatefulSetResource{Object: *statefulSet}, nil
 }
 
-// IsReady performs the logic to determine if a secret is ready.
+// IsReady performs the logic to determine if a StatefulSet is ready.
 func (statefulSet *StatefulSetResource) IsReady() (bool, error) {
 	// if we have a name that is empty, we know we did not find the object
 	if statefulSet.Object.Name == "" {
