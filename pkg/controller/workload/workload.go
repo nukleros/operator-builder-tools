@@ -32,7 +32,8 @@ type Workload interface {
 	SetChildResourceCondition(*status.ChildResource)
 }
 
-// Validate validates an individual workload to ensure that its GVK is proper.
+// Validate validates an individual workload to ensure that its GVK is for the
+// correct resource.
 func Validate(workload Workload) error {
 	defaultWorkloadGVK := workload.GetWorkloadGVK()
 
