@@ -10,7 +10,11 @@ import (
 
 	"github.com/banzaicloud/k8s-objectmatcher/patch"
 	"github.com/banzaicloud/operator-tools/pkg/reconciler"
+
 	"github.com/imdario/mergo"
+
+	"github.com/nukleros/desired"
+
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -148,6 +152,22 @@ func AreEqual(desired, actual client.Object) (bool, error) {
 	}
 
 	return diffResults.IsEmpty(), nil
+}
+
+// AreDesired determines if an actual resource is in a desired state based on the state
+// of a desired resource.
+func AreDesired(desiredObject, actualObject client.Object) (bool, error) {
+	desiredResource, err := ToUnstructured(desiredObject)
+	if err != nil {
+		return false, err
+	}
+
+	actualResource, err := ToUnstructured(actualObject)
+	if err != nil {
+		return false, err
+	}
+
+	return desired.Desired(desiredResource, actualResource)
 }
 
 // EqualNamespaceName will compare the namespace and name of two resource objects for equality.

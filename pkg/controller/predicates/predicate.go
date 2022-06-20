@@ -88,7 +88,7 @@ func needsReconciliation(r workload.Reconciler, req *workload.Request, existing,
 		return true
 	}
 
-	equal, err := resources.AreEqual(desired, requested)
+	equal, err := resources.AreDesired(desired, requested)
 	if err != nil {
 		r.GetLogger().Error(
 			err, "unable to determine equality for reconciliation",
