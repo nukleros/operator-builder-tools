@@ -167,7 +167,7 @@ func AreDesired(desiredObject, actualObject client.Object) (bool, error) {
 		return false, err
 	}
 
-	return desired.Desired(desiredResource, actualResource)
+	return desired.Desired(desiredResource.Object, actualResource.Object)
 }
 
 // EqualNamespaceName will compare the namespace and name of two resource objects for equality.
