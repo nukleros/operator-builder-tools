@@ -7,6 +7,7 @@ import (
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 // Reconciler acts as a client and state holder of the controller
@@ -16,6 +17,7 @@ type Reconciler interface {
 
 	// attribute exporters and setters
 	GetController() controller.Controller
+	GetManager() manager.Manager
 	GetLogger() logr.Logger
 	GetResources(*Request) ([]client.Object, error)
 	GetEventRecorder() record.EventRecorder
