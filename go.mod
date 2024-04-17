@@ -3,10 +3,8 @@ module github.com/nukleros/operator-builder-tools
 go 1.22
 
 require (
-	github.com/banzaicloud/k8s-objectmatcher v1.8.0
-	github.com/banzaicloud/operator-tools v0.28.10
 	github.com/go-logr/logr v1.4.1
-	github.com/imdario/mergo v0.3.12
+	github.com/imdario/mergo v0.3.16
 	github.com/nukleros/desired v0.1.0
 	k8s.io/api v0.29.4
 	k8s.io/apiextensions-apiserver v0.29.4
@@ -15,11 +13,14 @@ require (
 	sigs.k8s.io/controller-runtime v0.17.3
 )
 
+require github.com/cisco-open/k8s-objectmatcher v1.9.0
+
 require (
 	emperror.dev/errors v0.8.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/briandowns/spinner v1.23.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/cisco-open/operator-tools v0.34.0
 	github.com/cppforlife/go-patch v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.12.0 // indirect
