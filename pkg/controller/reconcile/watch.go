@@ -42,13 +42,17 @@ func Watch(
 	}
 
 	// watch the resource if it current is not being watched
+	eventHandler := handler.EnqueueRequestForOwner(
+		r.GetManager().GetScheme(),
+		r.GetManager().GetRESTMapper(),
+		req.Workload,
+		handler.OnlyControllerOwner(),
+	)
+
 	if !watched {
 		if err := r.GetController().Watch(
-			&source.Kind{Type: resource},
-			&handler.EnqueueRequestForOwner{
-				IsController: true,
-				OwnerType:    req.Workload,
-			},
+			source.Kind(r.GetManager().GetCache(), resource),
+			eventHandler,
 			predicates.ResourcePredicates(r, req),
 		); err != nil {
 			return fmt.Errorf("unable to watch resource, %w", err)

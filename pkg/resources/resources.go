@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/banzaicloud/k8s-objectmatcher/patch"
-	"github.com/banzaicloud/operator-tools/pkg/reconciler"
+	"github.com/cisco-open/k8s-objectmatcher/patch"
+	"github.com/cisco-open/operator-tools/pkg/reconciler"
 
 	"github.com/imdario/mergo"
 
