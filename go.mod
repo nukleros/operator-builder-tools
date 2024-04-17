@@ -12,6 +12,7 @@ require (
 	k8s.io/apimachinery v0.29.4
 	k8s.io/client-go v0.29.4
 	sigs.k8s.io/controller-runtime v0.17.3
+	github.com/cisco-open/operator-tools v0.34.0
 )
 
 require (
@@ -19,7 +20,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/briandowns/spinner v1.23.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cisco-open/operator-tools v0.34.0
 	github.com/cppforlife/go-patch v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.12.0 // indirect
