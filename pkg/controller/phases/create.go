@@ -145,8 +145,14 @@ func CreateOrUpdate(r workload.Reconciler, req *workload.Request, resource clien
 			return fmt.Errorf("unable to create resource %s, %w", resource.GetName(), err)
 		}
 
+		// add the created event
+		status.Created.RegisterAction(r.GetEventRecorder(), resource, req.Workload)
+
 		return reconcile.Watch(r, req, resource)
 	}
+
+	// add the updated event
+	status.Updated.RegisterAction(r.GetEventRecorder(), resource, req.Workload)
 
 	if err := resources.Update(r, req, resource, clusterResource); err != nil {
 		return fmt.Errorf("unable to update resource %s, %w", resource.GetName(), err)
