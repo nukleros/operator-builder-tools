@@ -17,9 +17,10 @@ type HandlerFunc func(r workload.Reconciler, req *workload.Request) (proceed boo
 
 // Phase defines a phase of the reconciliation process.
 type Phase struct {
-	Name          string
-	definition    HandlerFunc
-	requeueResult *ctrl.Result
+	Name            string
+	definition      HandlerFunc
+	requeueResult   *ctrl.Result
+	resourceOptions []ResourceOption
 }
 
 // Requeue will return the phase's reconcile result when requeueing is needed.

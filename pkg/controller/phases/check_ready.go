@@ -12,7 +12,7 @@ import (
 )
 
 // CheckReadyPhase executes checking for a parent component's readiness status.
-func CheckReadyPhase(r workload.Reconciler, req *workload.Request) (bool, error) {
+func CheckReadyPhase(r workload.Reconciler, req *workload.Request, options ...ResourceOption) (bool, error) {
 	// check to see if known types are ready
 	knownReady, err := resourcesAreReady(r, req)
 	if err != nil {

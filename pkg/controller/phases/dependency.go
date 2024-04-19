@@ -12,7 +12,7 @@ import (
 )
 
 // DependencyPhase executes a dependency check prior to attempting to create resources.
-func DependencyPhase(r workload.Reconciler, req *workload.Request) (bool, error) {
+func DependencyPhase(r workload.Reconciler, req *workload.Request, options ...ResourceOption) (bool, error) {
 	if !req.Workload.GetDependencyStatus() {
 		satisfied, err := dependenciesSatisfied(r, req)
 		if err != nil {

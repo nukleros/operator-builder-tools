@@ -15,7 +15,7 @@ import (
 )
 
 // CreateResourcesPhase creates or updated the child resources of a workload during a reconciliation loop.
-func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, error) {
+func CreateResourcesPhase(r workload.Reconciler, req *workload.Request, options ...ResourceOption) (bool, error) {
 	// get the resources in memory
 	desiredResources, err := r.GetResources(req)
 	if err != nil {
