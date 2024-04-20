@@ -38,3 +38,15 @@ func WithResourceOptions(options ...ResourceOption) PhaseOption {
 		p.resourceOptions = append(p.resourceOptions, options...)
 	}
 }
+
+// hasResourceOption returns true if a set of resource options has a given
+// resource option.
+func hasResourceOption(option ResourceOption, options ...ResourceOption) bool {
+	for i := range options {
+		if options[i] == option {
+			return true
+		}
+	}
+
+	return false
+}

@@ -13,7 +13,7 @@ import (
 
 // HandlerFunc is an adapter to allow the use of ordinary functions as reconcile phases.
 // If the function has the appropriate signature, it will considered a valid phase handler.
-type HandlerFunc func(r workload.Reconciler, req *workload.Request) (proceed bool, err error)
+type HandlerFunc func(r workload.Reconciler, req *workload.Request, options ...ResourceOption) (proceed bool, err error)
 
 // Phase defines a phase of the reconciliation process.
 type Phase struct {

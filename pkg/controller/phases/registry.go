@@ -93,7 +93,7 @@ func (registry *Registry) Execute(r workload.Reconciler, req *workload.Request, 
 			"phase", phase.Name,
 		)
 
-		proceed, err := phase.definition(r, req)
+		proceed, err := phase.definition(r, req, phase.resourceOptions...)
 		result, err := phase.handlePhaseExit(r, req, proceed, err)
 
 		if err != nil || !proceed {
