@@ -24,7 +24,7 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request, options 
 
 	proceed := true
 
-	wait := hasResourceOption(ResorceOptionWithWait)
+	wait := hasResourceOption(ResorceOptionWithWait, options...)
 
 	for _, resource := range desiredResources {
 		condition, ready, err := HandleResourcePhaseExit(
@@ -135,7 +135,7 @@ func persistResourcePhase(
 			return false, fmt.Errorf("unable to retrieve resource %s, %w", resource.GetName(), err)
 		}
 
-		return resources.AreReady(resource, clusterResource)
+		return resources.IsReady(clusterResource)
 	}
 
 	return true, err
