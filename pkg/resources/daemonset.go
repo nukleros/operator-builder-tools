@@ -31,7 +31,7 @@ func NewDaemonSetResource(object client.Object) (*DaemonSetResource, error) {
 	return &DaemonSetResource{Object: *daemonSet}, nil
 }
 
-// DaemonSetIsReady checks to see if a Daemonset is ready.
+// IsReady checks to see if a DaemonSet is ready.
 func (daemonSet *DaemonSetResource) IsReady() (bool, error) {
 	// ensure the desired number is scheduled and ready
 	if daemonSet.Object.Status.DesiredNumberScheduled == daemonSet.Object.Status.NumberReady {

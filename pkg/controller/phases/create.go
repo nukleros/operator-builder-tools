@@ -129,13 +129,7 @@ func persistResourcePhase(
 
 	// wait if requested
 	if wait {
-		// get the resource from the cluster
-		clusterResource, err := resources.Get(r, req, resource)
-		if err != nil {
-			return false, fmt.Errorf("unable to retrieve resource %s, %w", resource.GetName(), err)
-		}
-
-		return resources.IsReady(clusterResource)
+		return resources.IsReadyFromReconciler(r, req, resource)
 	}
 
 	return true, err
