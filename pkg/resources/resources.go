@@ -93,6 +93,12 @@ func getResourceChecker(resource client.Object) (resourceChecker, error) {
 		return NewServiceResource(resource)
 	case EndpointsKind:
 		return NewEndpointsResource(resource)
+	case IssuerKind:
+		return NewIssuerResource(resource)
+	case ClusterIssuerKind:
+		return NewClusterIssuerResource(resource)
+	case CertificateKind:
+		return NewCertificateResource(resource)
 	default:
 		return NewUnknownResource(resource)
 	}

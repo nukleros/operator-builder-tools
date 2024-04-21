@@ -3,7 +3,9 @@ module github.com/nukleros/operator-builder-tools
 go 1.22
 
 require (
+	github.com/cert-manager/cert-manager v1.14.4
 	github.com/cisco-open/k8s-objectmatcher v1.9.0
+	github.com/cisco-open/operator-tools v0.34.0
 	github.com/go-logr/logr v1.4.1
 	github.com/imdario/mergo v0.3.16
 	github.com/nukleros/desired v0.1.0
@@ -12,7 +14,6 @@ require (
 	k8s.io/apimachinery v0.29.4
 	k8s.io/client-go v0.29.4
 	sigs.k8s.io/controller-runtime v0.17.3
-	github.com/cisco-open/operator-tools v0.34.0
 )
 
 require (
@@ -21,7 +22,7 @@ require (
 	github.com/briandowns/spinner v1.23.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cppforlife/go-patch v0.2.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emicklei/go-restful/v3 v3.12.0 // indirect
 	github.com/evanphx/json-patch v5.9.0+incompatible // indirect
 	github.com/evanphx/json-patch/v5 v5.9.0 // indirect
@@ -72,6 +73,7 @@ require (
 	k8s.io/klog/v2 v2.120.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240411171206-dc4e619f62f3 // indirect
 	k8s.io/utils v0.0.0-20240310230437-4693a0247e57 // indirect
+	sigs.k8s.io/gateway-api v1.0.0 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
