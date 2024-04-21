@@ -63,7 +63,7 @@ func (event Event) RegisterAction(recorder record.EventRecorder, child, parent c
 }
 
 // getMessageString gets the message string for an object.  The message string is the message that is
-// displayed when a resource is actioned upon.
+// displayed when a resource is acted upon.
 func getMessageString(object client.Object) string {
 	return fmt.Sprintf("%s/%s", object.GetObjectKind().GroupVersionKind().Kind, object.GetName())
 }
