@@ -22,7 +22,7 @@ func WithCustomRequeueResult(requeueResult ctrl.Result) PhaseOption {
 	}
 }
 
-// WithWait adds the ResourceOptionWithWait resource option to the phase.
+// WithResourceOptions adds the requested resource options to the phase.
 func WithResourceOptions(options ...ResourceOption) PhaseOption {
 	return func(p *Phase) {
 		if len(options) == 0 {
