@@ -6,6 +6,7 @@ package resources
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -48,5 +49,12 @@ func (deployment *DeploymentResource) IsReady() (bool, error) {
 		return false, nil
 	}
 
-	return true, nil
+	// ensure the ready condition is true
+	for _, condition := range deployment.Object.Status.Conditions {
+		if condition.Type == appsv1.DeploymentAvailable && condition.Status == corev1.ConditionTrue {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }

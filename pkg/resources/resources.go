@@ -14,6 +14,7 @@ import (
 	"github.com/imdario/mergo"
 
 	"github.com/nukleros/desired"
+	"github.com/nukleros/operator-builder-tools/pkg/controller/workload"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -42,6 +43,30 @@ func ToTyped(destination, source client.Object) error {
 	return runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredObject, destination)
 }
 
+// getResourceCheckerFromReconciler gets a resource checker from an object.  This performs the resource
+// lookup within the cluster from a reconciler.
+func getResourceCheckerFromReconciler(r workload.Reconciler, req *workload.Request, resource client.Object) (resourceChecker, error) {
+	if resource == nil {
+		return nil, fmt.Errorf("no object was found")
+	}
+
+	clusterResource, err := Get(r, req, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	switch resource.GetObjectKind().GroupVersionKind().Kind {
+	case MutatingWebhookConfigurationKind:
+		return NewMutatingWebhookConfigurationResource(r, req, clusterResource)
+	case ValidatingWebhookConfigurationKind:
+		return NewValidatingWebhookConfigurationResource(r, req, clusterResource)
+	default:
+		return getResourceChecker(clusterResource)
+	}
+}
+
+// getResourceChecker gets a resource checker from an object.  This is only safe to assume that the
+// object being passed has already been retrieved from the cluster.
 func getResourceChecker(resource client.Object) (resourceChecker, error) {
 	if resource == nil {
 		return nil, fmt.Errorf("no object was found")
@@ -66,9 +91,29 @@ func getResourceChecker(resource client.Object) (resourceChecker, error) {
 		return NewJobResource(resource)
 	case ServiceKind:
 		return NewServiceResource(resource)
+	case EndpointsKind:
+		return NewEndpointsResource(resource)
+	case IssuerKind:
+		return NewIssuerResource(resource)
+	case ClusterIssuerKind:
+		return NewClusterIssuerResource(resource)
+	case CertificateKind:
+		return NewCertificateResource(resource)
 	default:
 		return NewUnknownResource(resource)
 	}
+}
+
+// IsReadyFromReconciler returns whether a specific known resource is ready.  Always returns true for unknown resources
+// so that dependency checks will not fail and reconciliation of resources can happen with errors rather
+// than stopping entirely.  It takes in a client object and does the get on behalf of the caller.
+func IsReadyFromReconciler(r workload.Reconciler, req *workload.Request, resource client.Object) (bool, error) {
+	checker, err := getResourceCheckerFromReconciler(r, req, resource)
+	if err != nil {
+		return false, fmt.Errorf("unable to determine ready status for resource, %w", err)
+	}
+
+	return checker.IsReady()
 }
 
 // IsReady returns whether a specific known resource is ready.  Always returns true for unknown resources

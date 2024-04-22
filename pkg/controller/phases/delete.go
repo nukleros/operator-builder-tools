@@ -11,7 +11,7 @@ import (
 )
 
 // DeletionCompletePhase executes the completion of a reconciliation loop for a delete request.
-func DeletionCompletePhase(r workload.Reconciler, req *workload.Request) (bool, error) {
+func DeletionCompletePhase(r workload.Reconciler, req *workload.Request, options ...ResourceOption) (bool, error) {
 	req.Log.Info("successfully deleted")
 
 	return true, nil

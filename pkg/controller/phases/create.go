@@ -15,7 +15,7 @@ import (
 )
 
 // CreateResourcesPhase creates or updated the child resources of a workload during a reconciliation loop.
-func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, error) {
+func CreateResourcesPhase(r workload.Reconciler, req *workload.Request, options ...ResourceOption) (bool, error) {
 	// get the resources in memory
 	desiredResources, err := r.GetResources(req)
 	if err != nil {
@@ -24,14 +24,27 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, e
 
 	proceed := true
 
+	wait := hasResourceOption(ResourceOptionWithWait, options...)
+
 	for _, resource := range desiredResources {
-		condition, created, err := HandleResourcePhaseExit(
-			persistResourcePhase(r, req, resource),
+		condition, ready, err := HandleResourcePhaseExit(
+			persistResourcePhase(r, req, resource, wait),
 		)
 		if err != nil {
 			if !IsOptimisticLockError(err) {
 				req.Log.Error(err, "unable to create or update resource")
 			}
+		}
+
+		if wait && !ready {
+			r.GetLogger().Info(
+				"resource is not ready",
+				"kind", resource.GetObjectKind().GroupVersionKind().Kind,
+				"name", resource.GetName(),
+				"namespace", resource.GetNamespace(),
+			)
+
+			return false, nil
 		}
 
 		resourceObject := status.ToCommonResource(resource)
@@ -47,11 +60,11 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request) (bool, e
 					"namespace", resource.GetNamespace(),
 				)
 
-				created = false
+				ready = false
 			}
 		}
 
-		proceed = proceed && created
+		proceed = proceed && ready
 	}
 
 	return proceed, err
@@ -95,6 +108,7 @@ func persistResourcePhase(
 	r workload.Reconciler,
 	req *workload.Request,
 	resource client.Object,
+	wait bool,
 ) (bool, error) {
 	ready, err := commonWait(r, req, resource)
 	if err != nil {
@@ -108,14 +122,17 @@ func persistResourcePhase(
 
 	// persist the resource
 	if err := CreateOrUpdate(r, req, resource); err != nil {
-		if IsOptimisticLockError(err) {
-			return true, nil
+		if !IsOptimisticLockError(err) {
+			return false, fmt.Errorf("unable to create or update resource %s, %w", resource.GetName(), err)
 		}
-
-		return false, fmt.Errorf("unable to create or update resource %s, %w", resource.GetName(), err)
 	}
 
-	return true, nil
+	// wait if requested
+	if wait {
+		return resources.IsReadyFromReconciler(r, req, resource)
+	}
+
+	return true, err
 }
 
 // CreateOrUpdate creates a resource if it does not already exist or updates a resource
@@ -141,16 +158,46 @@ func CreateOrUpdate(r workload.Reconciler, req *workload.Request, resource clien
 	// create the resource if we have a nil object, or update the resource if we have one
 	// that exists in the cluster already
 	if clusterResource == nil {
-		if err := resources.Create(r, req, resource); err != nil {
-			return fmt.Errorf("unable to create resource %s, %w", resource.GetName(), err)
-		}
-
-		return reconcile.Watch(r, req, resource)
+		return create(r, req, resource)
 	}
 
-	if err := resources.Update(r, req, resource, clusterResource); err != nil {
-		return fmt.Errorf("unable to update resource %s, %w", resource.GetName(), err)
+	if err := update(r, req, resource, clusterResource); err != nil {
+		return fmt.Errorf("unable to update resource")
 	}
+
+	return nil
+}
+
+// create runs the logic to create a resource.
+func create(r workload.Reconciler, req *workload.Request, resource client.Object) error {
+	if err := resources.Create(r, req, resource); err != nil {
+		return fmt.Errorf("unable to create resource %s, %w", resource.GetName(), err)
+	}
+
+	// add the created event
+	status.Created.RegisterAction(r.GetEventRecorder(), resource, req.Workload)
+
+	return reconcile.Watch(r, req, resource)
+}
+
+// update runs the logic to update a resource.
+func update(r workload.Reconciler, req *workload.Request, desiredResource, currentResource client.Object) error {
+	// return if the resource is already in a desired state (no update required)
+	isDesired, err := resources.AreDesired(desiredResource, currentResource)
+	if err != nil {
+		r.GetLogger().Error(err, "unable to determine desired status for resource")
+	}
+
+	if isDesired {
+		return nil
+	}
+
+	if err := resources.Update(r, req, desiredResource, currentResource); err != nil {
+		return fmt.Errorf("unable to update resource %s, %w", desiredResource.GetName(), err)
+	}
+
+	// add the updated event
+	status.Updated.RegisterAction(r.GetEventRecorder(), desiredResource, req.Workload)
 
 	return nil
 }

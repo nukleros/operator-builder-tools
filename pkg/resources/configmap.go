@@ -14,6 +14,7 @@ const (
 	ConfigMapVersion = "v1"
 )
 
+// ConfigMapResource represents a Kubernetes ConfigMap object.
 type ConfigMapResource struct {
 	Object v1.ConfigMap
 }

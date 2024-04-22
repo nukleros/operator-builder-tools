@@ -36,6 +36,10 @@ func commonWait(
 			return ready, fmt.Errorf("unable to determine if %s namespace is ready, %w", resource.GetNamespace(), err)
 		}
 
+		if !ready {
+			r.GetLogger().Info(fmt.Sprintf("namespace '%s' is not ready", resource.GetNamespace()))
+		}
+
 		return ready, nil
 	}
 
