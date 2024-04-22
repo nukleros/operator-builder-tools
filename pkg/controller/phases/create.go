@@ -24,7 +24,7 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request, options 
 
 	proceed := true
 
-	wait := hasResourceOption(ResorceOptionWithWait, options...)
+	wait := hasResourceOption(ResourceOptionWithWait, options...)
 
 	for _, resource := range desiredResources {
 		condition, ready, err := HandleResourcePhaseExit(

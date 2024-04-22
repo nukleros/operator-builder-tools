@@ -11,7 +11,7 @@ type PhaseOption func(*Phase)
 type ResourceOption int
 
 const (
-	ResorceOptionWithWait = iota
+	ResourceOptionWithWait = iota
 )
 
 // WithCustomRequeueResult allows you to define a custom result for a phase when it is requeued,
