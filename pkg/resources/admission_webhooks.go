@@ -18,12 +18,16 @@ const (
 	ValidatingWebhookConfigurationVersion = "admissionregistration.k8s.io/v1"
 )
 
+// MutatingWebhookConfigurationResource represents a Kubernetes
+// MutatingWebhookConfiguration object.
 type MutatingWebhookConfigurationResource struct {
 	Object     admissionv1.MutatingWebhookConfiguration
 	Reconciler workload.Reconciler
 	Request    *workload.Request
 }
 
+// ValidatingWebhookConfigurationResource represents a Kubernetes
+// ValidatingWebhookConfiguration object.
 type ValidatingWebhookConfigurationResource struct {
 	Object     admissionv1.ValidatingWebhookConfiguration
 	Reconciler workload.Reconciler

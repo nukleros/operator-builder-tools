@@ -14,7 +14,7 @@ const (
 	DaemonSetVersion = "apps/v1"
 )
 
-// DaemonSetResource represents a Kubernetes Daemonset object.
+// DaemonSetResource represents a Kubernetes DaemonSet object.
 type DaemonSetResource struct {
 	Object appsv1.DaemonSet
 }

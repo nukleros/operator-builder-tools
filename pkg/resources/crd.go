@@ -14,6 +14,7 @@ const (
 	CustomResourceDefinitionVersion = "apiextensions.k8s.io/v1"
 )
 
+// CRDResource represents a Kubernetes CustomResourceDefinition object.
 type CRDResource struct {
 	Object extensionsv1.CustomResourceDefinition
 }
