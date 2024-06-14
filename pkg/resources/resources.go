@@ -131,8 +131,8 @@ func IsReady(resource client.Object) (bool, error) {
 // AreReady returns whether resources are ready.  All resources must be ready in order
 // to satisfy the requirement that resources are ready.
 func AreReady(resources ...client.Object) (bool, error) {
-	for _, rsrc := range resources {
-		ready, err := IsReady(rsrc)
+	for i := range resources {
+		ready, err := IsReady(resources[i])
 		if !ready || err != nil {
 			return false, err
 		}
