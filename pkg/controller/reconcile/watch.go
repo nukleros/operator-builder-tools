@@ -37,6 +37,8 @@ func Watch(
 				watcher.GetObjectKind().GroupVersionKind(),
 			) {
 				watched = true
+
+				break
 			}
 		}
 	}
