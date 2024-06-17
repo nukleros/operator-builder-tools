@@ -14,7 +14,7 @@ import (
 
 // Create creates a resource.
 func Create(r workload.Reconciler, req *workload.Request, resource client.Object) error {
-	r.GetLogger().Info("creating resource", messageFor(resource)...)
+	r.GetLogger().Info("creating resource", MessageFor(resource)...)
 
 	if err := r.Create(
 		req.Context,
@@ -63,7 +63,7 @@ func Update(r workload.Reconciler, req *workload.Request, newResource, oldResour
 		return nil
 	}
 
-	r.GetLogger().Info("updating resource", messageFor(oldResource)...)
+	r.GetLogger().Info("updating resource", MessageFor(oldResource)...)
 
 	if err := r.Patch(
 		req.Context,
@@ -108,9 +108,9 @@ func NeedsUpdate(r workload.Reconciler, desired, actual client.Object) (bool, er
 	return true, nil
 }
 
-// messageFor returns a CRUD message for a particular resource.  It sets an even number of key/value pairs
+// MessageFor returns a CRUD message for a particular resource.  It sets an even number of key/value pairs
 // that are intended to be passed into the reconciler.GetLogger methods.
-func messageFor(resource client.Object) []any {
+func MessageFor(resource client.Object) []any {
 	return []any{
 		"kind", resource.GetObjectKind().GroupVersionKind().Kind,
 		"name", resource.GetName(),

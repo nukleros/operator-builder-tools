@@ -74,12 +74,7 @@ func needsReconciliation(r workload.Reconciler, req *workload.Request, existing,
 	// to the existing object fields
 	desired, err := GetDesiredObject(r, req, requested)
 	if err != nil {
-		r.GetLogger().Error(
-			err, "unable to get object in memory",
-			"kind", requested.GetObjectKind().GroupVersionKind().Kind,
-			"name", requested.GetName(),
-			"namespace", requested.GetNamespace(),
-		)
+		r.GetLogger().Error(err, "unable to get object in memory", resources.MessageFor(requested)...)
 
 		return false
 	}
@@ -90,12 +85,7 @@ func needsReconciliation(r workload.Reconciler, req *workload.Request, existing,
 
 	equal, err := resources.AreDesired(desired, requested)
 	if err != nil {
-		r.GetLogger().Error(
-			err, "unable to determine equality for reconciliation",
-			"kind", desired.GetObjectKind().GroupVersionKind().Kind,
-			"name", desired.GetName(),
-			"namespace", desired.GetNamespace(),
-		)
+		r.GetLogger().Error(err, "unable to determine equality for reconciliation", resources.MessageFor(desired)...)
 
 		return true
 	}
