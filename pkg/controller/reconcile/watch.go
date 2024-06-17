@@ -20,7 +20,7 @@ func Watch(
 	req *workload.Request,
 	resource client.Object,
 ) error {
-	// ignore jobs as they are ephemerial
+	// ignore jobs as they are ephemeral
 	if resource.GetObjectKind().GroupVersionKind().Kind == "job" {
 		if resource.GetObjectKind().GroupVersionKind().Version == "v1" {
 			return nil
