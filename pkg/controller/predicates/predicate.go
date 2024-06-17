@@ -83,30 +83,28 @@ func needsReconciliation(r workload.Reconciler, req *workload.Request, existing,
 		return true
 	}
 
-	equal, err := resources.AreDesired(desired, requested)
+	resourceIsDesired, err := resources.AreDesired(desired, requested)
 	if err != nil {
 		r.GetLogger().Error(err, "unable to determine equality for reconciliation", resources.MessageFor(desired)...)
 
 		return true
 	}
 
-	return !equal
+	return !resourceIsDesired
 }
 
 // GetDesiredObject returns the desired object from a list stored in memory.
 func GetDesiredObject(r workload.Reconciler, req *workload.Request, compared client.Object) (client.Object, error) {
-	var desired client.Object
-
-	allObjects, err := r.GetResources(req)
+	desired, err := r.GetResources(req)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get resources, %w", err)
 	}
 
-	for _, resource := range allObjects {
-		if resources.EqualGVK(compared, resource) && resources.EqualNamespaceName(compared, resource) {
-			return resource, nil
+	for i := range desired {
+		if resources.EqualGVK(compared, desired[i]) && resources.EqualNamespaceName(compared, desired[i]) {
+			return desired[i], nil
 		}
 	}
 
-	return desired, nil
+	return nil, nil
 }
