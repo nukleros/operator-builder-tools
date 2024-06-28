@@ -14,12 +14,7 @@ import (
 
 // Create creates a resource.
 func Create(r workload.Reconciler, req *workload.Request, resource client.Object) error {
-	r.GetLogger().Info(
-		"creating resource",
-		"kind", resource.GetObjectKind().GroupVersionKind().Kind,
-		"name", resource.GetName(),
-		"namespace", resource.GetNamespace(),
-	)
+	r.GetLogger().Info("creating resource", MessageFor(resource)...)
 
 	if err := r.Create(
 		req.Context,
@@ -58,27 +53,25 @@ func Get(r workload.Reconciler, req *workload.Request, resource client.Object) (
 
 // Update updates a resource.
 func Update(r workload.Reconciler, req *workload.Request, newResource, oldResource client.Object) error {
+	// return immediately if we found an error or we do not need an update
 	needsUpdate, err := NeedsUpdate(r, newResource, oldResource)
 	if err != nil {
 		return err
 	}
 
-	if needsUpdate {
-		r.GetLogger().Info(
-			"updating resource",
-			"kind", oldResource.GetObjectKind().GroupVersionKind().Kind,
-			"name", oldResource.GetName(),
-			"namespace", oldResource.GetNamespace(),
-		)
+	if !needsUpdate {
+		return nil
+	}
 
-		if err := r.Patch(
-			req.Context,
-			newResource,
-			client.Merge,
-			&client.PatchOptions{FieldManager: r.GetFieldManager()},
-		); err != nil {
-			return fmt.Errorf("unable to update resource; %w", err)
-		}
+	r.GetLogger().Info("updating resource", MessageFor(oldResource)...)
+
+	if err := r.Patch(
+		req.Context,
+		newResource,
+		client.Merge,
+		&client.PatchOptions{FieldManager: r.GetFieldManager()},
+	); err != nil {
+		return fmt.Errorf("unable to update resource; %w", err)
 	}
 
 	return nil
@@ -113,4 +106,14 @@ func NeedsUpdate(r workload.Reconciler, desired, actual client.Object) (bool, er
 	}
 
 	return true, nil
+}
+
+// MessageFor returns a CRUD message for a particular resource.  It sets an even number of key/value pairs
+// that are intended to be passed into the reconciler.GetLogger methods.
+func MessageFor(resource client.Object) []any {
+	return []any{
+		"kind", resource.GetObjectKind().GroupVersionKind().Kind,
+		"name", resource.GetName(),
+		"namespace", resource.GetNamespace(),
+	}
 }

@@ -37,12 +37,7 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request, options 
 		}
 
 		if wait && !ready {
-			r.GetLogger().Info(
-				"resource is not ready",
-				"kind", resource.GetObjectKind().GroupVersionKind().Kind,
-				"name", resource.GetName(),
-				"namespace", resource.GetNamespace(),
-			)
+			r.GetLogger().Info("resource is not ready", resources.MessageFor(resource)...)
 
 			return false, nil
 		}
@@ -53,12 +48,7 @@ func CreateResourcesPhase(r workload.Reconciler, req *workload.Request, options 
 		// update the status conditions and return any errors
 		if err := UpdateResourceConditions(r, req, resourceObject); err != nil {
 			if !IsOptimisticLockError(err) {
-				r.GetLogger().Error(
-					err, "failed to update resource conditions",
-					"kind", resource.GetObjectKind().GroupVersionKind().Kind,
-					"name", resource.GetName(),
-					"namespace", resource.GetNamespace(),
-				)
+				r.GetLogger().Error(err, "failed to update resource conditions", resources.MessageFor(resource)...)
 
 				ready = false
 			}

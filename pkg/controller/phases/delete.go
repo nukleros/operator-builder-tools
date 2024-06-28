@@ -39,8 +39,8 @@ func RegisterDeleteHooks(r workload.Reconciler, req *workload.Request) error {
 
 // containsString checks for a string in a slice of strings.
 func containsString(slice []string, s string) bool {
-	for _, item := range slice {
-		if item == s {
+	for i := range slice {
+		if slice[i] == s {
 			return true
 		}
 	}
