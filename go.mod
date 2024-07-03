@@ -8,7 +8,7 @@ require (
 	github.com/cisco-open/operator-tools v0.34.0
 	github.com/go-logr/logr v1.4.1
 	github.com/imdario/mergo v0.3.16
-	github.com/nukleros/desired v0.1.0
+	github.com/nukleros/desired v0.1.1
 	k8s.io/api v0.29.4
 	k8s.io/apiextensions-apiserver v0.29.4
 	k8s.io/apimachinery v0.29.4
