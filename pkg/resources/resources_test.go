@@ -5,10 +5,12 @@
 package resources_test
 
 import (
+	"reflect"
 	"testing"
 
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/nukleros/operator-builder-tools/pkg/resources"
@@ -215,6 +217,67 @@ func TestEqualNamespaceName(t *testing.T) {
 
 			if got := resources.EqualNamespaceName(tt.args.left, tt.args.right); got != tt.want {
 				t.Errorf("EqualNamespaceName() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestToTyped(t *testing.T) {
+	t.Parallel()
+
+	testTyped := &appsv1.Deployment{}
+
+	testUnstructured := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"apiVersion": "apps/v1",
+			"kind":       "Deployment",
+			"metadata": map[string]interface{}{
+				"name":      "test-deployment",
+				"namespace": "test-namespace",
+			},
+		},
+	}
+
+	type args struct {
+		destination client.Object
+		source      client.Object
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+		want    client.Object
+	}{
+		{
+			name: "ensure ability to convert unstructured to typed object",
+			args: args{
+				destination: testTyped,
+				source:      testUnstructured,
+			},
+			wantErr: false,
+			want: &appsv1.Deployment{
+				TypeMeta: metav1.TypeMeta{
+					Kind:       "Deployment",
+					APIVersion: "apps/v1",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "test-deployment",
+					Namespace: "test-namespace",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if err := resources.ToTyped(tt.args.destination, tt.args.source); (err != nil) != tt.wantErr {
+				t.Errorf("ToTyped() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !reflect.DeepEqual(tt.args.destination, tt.want) {
+				t.Errorf("ToTyped() = %v, want %v", tt.args.destination, tt.want)
 			}
 		})
 	}
