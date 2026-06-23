@@ -7,11 +7,14 @@ package resources
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
+	"emperror.dev/errors"
 	"github.com/cisco-open/k8s-objectmatcher/patch"
 	"github.com/cisco-open/operator-tools/pkg/reconciler"
+	json "github.com/json-iterator/go"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 
 	"github.com/nukleros/desired"
 	"github.com/nukleros/operator-builder-tools/pkg/controller/workload"
@@ -184,7 +187,7 @@ func AreEqual(desired, actual client.Object) (bool, error) {
 		reconciler.IgnoreManagedFields(),
 		patch.IgnoreStatusFields(),
 		patch.IgnoreVolumeClaimTemplateTypeMetaAndStatus(),
-		patch.IgnorePDBSelector(),
+		IgnorePDBSelector(),
 	}
 
 	diffResults, err := patch.DefaultPatchMaker.Calculate(
@@ -231,4 +234,72 @@ func EqualGVK(left, right client.Object) bool {
 	}
 
 	return left.GetObjectKind().GroupVersionKind() == right.GetObjectKind().GroupVersionKind()
+}
+
+// IgnorePDBSelector is a patch option that will ignore the selector field of a PodDisruptionBudget
+// when calculating differences between two resources.  It is a copy from an older version of
+// the k8s-objectmatcher library that is no longer available in the current version.
+func IgnorePDBSelector() patch.CalculateOption {
+	return func(current, modified []byte) ([]byte, []byte, error) {
+		currentResource := map[string]interface{}{}
+		if err := json.Unmarshal(current, &currentResource); err != nil {
+			return []byte{}, []byte{}, errors.Wrap(err, "could not unmarshal byte sequence for current")
+		}
+
+		modifiedResource := map[string]interface{}{}
+		if err := json.Unmarshal(modified, &modifiedResource); err != nil {
+			return []byte{}, []byte{}, errors.Wrap(err, "could not unmarshal byte sequence for modified")
+		}
+
+		if isPDB(currentResource) && isPDB(modifiedResource) && reflect.DeepEqual(getPDBSelector(currentResource), getPDBSelector(modifiedResource)) {
+			var err error
+
+			current, err = deletePDBSelector(currentResource)
+			if err != nil {
+				return nil, nil, errors.Wrap(err, "delete pdb selector from current")
+			}
+
+			modified, err = deletePDBSelector(modifiedResource)
+			if err != nil {
+				return nil, nil, errors.Wrap(err, "delete pdb selector from modified")
+			}
+		}
+
+		return current, modified, nil
+	}
+}
+
+func isPDB(resource map[string]interface{}) bool {
+	if av, ok := resource["apiVersion"].(string); ok {
+		return strings.HasPrefix(av, "policy/") && resource["kind"] == "PodDisruptionBudget"
+	}
+
+	return false
+}
+
+func getPDBSelector(resource map[string]interface{}) interface{} {
+	if spec, ok := resource["spec"]; ok {
+		if spec, ok := spec.(map[string]interface{}); ok {
+			if selector, ok := spec["selector"]; ok {
+				return selector
+			}
+		}
+	}
+
+	return nil
+}
+
+func deletePDBSelector(resource map[string]interface{}) ([]byte, error) {
+	if spec, ok := resource["spec"]; ok {
+		if spec, ok := spec.(map[string]interface{}); ok {
+			delete(spec, "selector")
+		}
+	}
+
+	obj, err := json.ConfigCompatibleWithStandardLibrary.Marshal(resource)
+	if err != nil {
+		return []byte{}, errors.Wrap(err, "could not marshal byte sequence")
+	}
+
+	return obj, nil
 }
