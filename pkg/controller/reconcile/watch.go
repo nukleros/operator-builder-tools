@@ -52,11 +52,14 @@ func Watch(
 	)
 
 	if !watched {
-		if err := r.GetController().Watch(
-			source.Kind(r.GetManager().GetCache(), resource),
+		syncingSource := source.Kind(
+			r.GetManager().GetCache(),
+			resource,
 			eventHandler,
 			predicates.ResourcePredicates(r, req),
-		); err != nil {
+		)
+
+		if err := r.GetController().Watch(syncingSource); err != nil {
 			return fmt.Errorf("unable to watch resource, %w", err)
 		}
 
