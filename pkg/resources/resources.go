@@ -238,7 +238,7 @@ func EqualGVK(left, right client.Object) bool {
 
 // IgnorePDBSelector is a patch option that will ignore the selector field of a PodDisruptionBudget
 // when calculating differences between two resources.  It is a copy from an older version of
-// the k8s-objectmatcher library that is no longer available in the current version.  It is used to
+// the k8s-objectmatcher library that is no longer available in the current version.
 func IgnorePDBSelector() patch.CalculateOption {
 	return func(current, modified []byte) ([]byte, []byte, error) {
 		currentResource := map[string]interface{}{}
