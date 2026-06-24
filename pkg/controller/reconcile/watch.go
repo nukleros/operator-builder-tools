@@ -44,14 +44,14 @@ func Watch(
 	}
 
 	// watch the resource if it current is not being watched
-	eventHandler := handler.EnqueueRequestForOwner(
-		r.GetManager().GetScheme(),
-		r.GetManager().GetRESTMapper(),
-		req.Workload,
-		handler.OnlyControllerOwner(),
-	)
-
 	if !watched {
+		eventHandler := handler.EnqueueRequestForOwner(
+			r.GetManager().GetScheme(),
+			r.GetManager().GetRESTMapper(),
+			req.Workload,
+			handler.OnlyControllerOwner(),
+		)
+
 		syncingSource := source.Kind(
 			r.GetManager().GetCache(),
 			resource,
