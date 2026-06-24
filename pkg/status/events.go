@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -48,17 +48,17 @@ func (event Event) Type() string {
 // cluster-scoped resources, you will see the events when describing the object and nowhere else.  For
 // namespace-scoped resources, you can also see the events by getting events in the particular
 // namespace.
-func (event Event) RegisterAction(recorder record.EventRecorder, child, parent client.Object) {
-	recorder.Event(
+func (event Event) RegisterAction(recorder events.EventRecorder, child, parent client.Object) {
+	recorder.Eventf(
 		parent,
+		child,
 		event.Type(),
 		event.String(),
-		fmt.Sprintf(
-			"%s child resource '%s' managed by parent resource '%s'",
-			event.String(),
-			getMessageString(child),
-			getMessageString(parent),
-		),
+		event.String(),
+		"%s child resource '%s' managed by parent resource '%s'",
+		event.String(),
+		getMessageString(child),
+		getMessageString(parent),
 	)
 }
 

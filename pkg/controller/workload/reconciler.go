@@ -4,7 +4,7 @@ package workload
 
 import (
 	"github.com/go-logr/logr"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -20,7 +20,7 @@ type Reconciler interface {
 	GetManager() manager.Manager
 	GetLogger() logr.Logger
 	GetResources(*Request) ([]client.Object, error)
-	GetEventRecorder() record.EventRecorder
+	GetEventRecorder() events.EventRecorder
 	GetFieldManager() string
 	GetWatches() []client.Object
 	SetWatch(client.Object)
