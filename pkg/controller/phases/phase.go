@@ -5,6 +5,7 @@ package phases
 import (
 	"fmt"
 
+	"k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/nukleros/operator-builder-tools/pkg/controller/workload"
@@ -70,6 +71,13 @@ func (p *Phase) handlePhaseExit(
 
 	// update the status conditions and return any errors
 	if updateError := updatePhaseConditions(r, req, &condition); updateError != nil {
+		// NOTE: a queued reconcile can run the delete phases again from a cached copy of a workload
+		// that an earlier reconcile already finished deleting, so its status update returns not found.
+		// the workload is gone, so there is no status left to record and not found is not an error.
+		if errors.IsNotFound(updateError) && !req.Workload.GetDeletionTimestamp().IsZero() {
+			return result, phaseError
+		}
+
 		// adjust the message if we had both an update error and a phase error
 		if !IsOptimisticLockError(updateError) {
 			if phaseError != nil {

@@ -5,6 +5,7 @@ package phases
 import (
 	"fmt"
 
+	"k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -70,7 +71,10 @@ func (registry *Registry) HandleExecution(r workload.Reconciler, req *workload.R
 			// remove our finalizer from the list and update it.
 			controllerutil.RemoveFinalizer(req.Workload, myFinalizerName)
 
-			if err := r.Update(req.Context, req.Workload); err != nil {
+			// NOTE: the same race as in handlePhaseExit: a queued reconcile working from a cached copy
+			// can find the workload already deleted.  removing the finalizer is only there to let it be
+			// deleted, so not found means there is nothing left to do.
+			if err := r.Update(req.Context, req.Workload); err != nil && !errors.IsNotFound(err) {
 				return ctrl.Result{}, fmt.Errorf("unable to remove finalizer from %s, %w", req.Workload.GetWorkloadGVK().Kind, err)
 			}
 		}
